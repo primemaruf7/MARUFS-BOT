@@ -1,137 +1,161 @@
-const fs = require('fs-extra');
-const chalk = require('chalk');
-const path = require('path');
-const { log, createOraDots, getText } = global.utils;
+const { readdirSync, readFileSync, writeFileSync, existsSync } = require("fs-extra");
+const path = require("path");
+const exec = (cmd, options) => new Promise((resolve, reject) => {
+        require("child_process").exec(cmd, options, (err, stdout) => {
+                if (err) return reject(err);
+                resolve(stdout);
+        });
+});
+const { log, loading, getText, colors, removeHomeDir } = global.utils;
+const { GoatBot } = global;
+const { configCommands } = GoatBot;
+const regExpCheckPackage = /require(\s+|)\((\s+|)[`'"]([^`'"]+)[`'"](\s+|)\)/g;
+const packageAlready = [];
 
-const bigText = `
-███╗░░░███╗░█████╗░██████╗░██╗░░░██╗███████╗
-████╗░████║██╔══██╗██╔══██╗██║░░░██║██╔════╝
-██╔████╔██║███████║██████╔╝██║░░░██║█████╗░░
-██║╚██╔╝██║██╔══██║██╔══██╗██║░░░██║██╔══╝░░
-██║░╚═╝░██║██║░░██║██║░░██║╚██████╔╝███████╗
-╚═╝░░░░░╚═╝╚═╝░░╚═╝╚═╝░░╚═╝░╚═════╝░╚══════╝
-`;
+const hackerLog = () => {
+        console.log("[+] Loading commands...");
+        console.log("[+] Loading events...");
+        console.log("[✓] All modules loaded successfully.");
+        console.log("> System ready...");
+};
 
-function header(title) {
-    return chalk.cyanBright(
-`\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-                 ${title}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`
-    );
-}
+module.exports = async function (api, threadModel, userModel, dashBoardModel, globalModel, threadsData, usersData, dashBoardData, globalData, createLine) {
 
-function line(text) {
-    return chalk.hex("#ffd369")(text);
-}
+        hackerLog(); // simple hacker-style output
 
-module.exports = async function (api, createLine) {
-
-    console.log(chalk.green(bigText));
-    console.log(header("🚀 GOATBOT DATABASE"));
-    console.log(line("📦 Loading system resources…"));
-
-    const controller = await require(path.join(__dirname, '..', '..', 'database/controller/index.js'))(api);
-    const { threadModel, userModel, dashBoardModel, globalModel, threadsData, usersData, dashBoardData, globalData, sequelize } = controller;
-
-    log.info('DATABASE', `🧵 Thread data: OK`);
-    log.info('DATABASE', `👤 User data: OK`);
-
-    const AUTO_SYNC_MIN_INTERVAL_MS = 6 * 60 * 60 * 1000;
-    const lastAutoSyncPath = path.join(__dirname, '..', '..', 'database/data/lastAutoSync.json');
-    let shouldAutoSync = true;
-    let lastAutoSyncAt = 0;
-
-    try {
-        if (fs.existsSync(lastAutoSyncPath)) {
-            lastAutoSyncAt = (fs.readJsonSync(lastAutoSyncPath) || {}).lastAutoSyncAt || 0;
-            shouldAutoSync = (Date.now() - lastAutoSyncAt) >= AUTO_SYNC_MIN_INTERVAL_MS;
-        }
-    } catch {
-        shouldAutoSync = true;
-    }
-
-    if (api && global.GoatBot.config.database.autoSyncWhenStart == true && shouldAutoSync) {
-
-        console.log(header("🔄 AUTO SYNC ENABLED"));
-
-        const spin = createOraDots(getText('loadData', 'refreshingThreadData'));
-
-        try {
-            api.setOptions({ logLevel: 'silent' });
-            spin._start();
-
-            const threadDataWillSet = [];
-            const allThreadData = [...global.db.allThreadData];
-
-            const allThreadInfo = await api.getThreadList(9999999, null, 'INBOX');
-
-            for (const threadInfo of allThreadInfo) {
-                if (threadInfo.isGroup && !allThreadData.some(thread => thread.threadID === threadInfo.threadID)) {
-                    threadDataWillSet.push(await threadsData.create(threadInfo.threadID, threadInfo));
-                } else {
-                    const refreshed = await threadsData.refreshInfo(threadInfo.threadID, threadInfo);
-                    allThreadData.splice(allThreadData.findIndex(thread => thread.threadID === threadInfo.threadID), 1);
-                    threadDataWillSet.push(refreshed);
+        const aliasesData = await globalData.get('setalias', 'data', []);
+        if (aliasesData) {
+                for (const data of aliasesData) {
+                        const { aliases, commandName } = data;
+                        for (const alias of aliases)
+                                if (GoatBot.aliases.has(alias))
+                                        throw new Error(`Alias "${alias}" already exists in command "${commandName}"`);
+                                else
+                                        GoatBot.aliases.set(alias, commandName);
                 }
-                global.db.receivedTheFirstMessage[threadInfo.threadID] = true;
-            }
+        }
 
-            const allThreadDataDontHaveBot = allThreadData.filter(
-                thread => !allThreadInfo.some(info => thread.threadID === info.threadID)
-            );
+        const folders = ["cmds", "events"];
+        let text, setMap, typeEnvCommand;
 
-            const botID = api.getCurrentUserID();
-
-            for (const thread of allThreadDataDontHaveBot) {
-                const me = thread.members.find(m => m.userID == botID);
-                if (me) {
-                    me.inGroup = false;
-                    await threadsData.set(thread.threadID, { members: thread.members });
+        for (const folderModules of folders) {
+                if (folderModules == "cmds") {
+                        text = "command";
+                        typeEnvCommand = "envCommands";
+                        setMap = "commands";
                 }
-            }
+                else {
+                        text = "event command";
+                        typeEnvCommand = "envEvents";
+                        setMap = "eventCommands";
+                }
 
-            global.db.allThreadData = [
-                ...threadDataWillSet,
-                ...allThreadDataDontHaveBot
-            ];
+                const fullPathModules = path.normalize(process.cwd() + `/scripts/${folderModules}`);
+                const Files = readdirSync(fullPathModules)
+                        .filter(file =>
+                                file.endsWith(".js") &&
+                                !file.endsWith("eg.js") &&
+                                (process.env.NODE_ENV == "development" ? true : !file.match(/(dev)\.js$/g)) &&
+                                !configCommands[folderModules == "cmds" ? "commandUnload" : "commandEventUnload"]?.includes(file)
+                        );
 
-            spin._stop();
-            log.info('DATABASE', getText('loadData', 'refreshThreadDataSuccess', global.db.allThreadData.length));
-            console.log(chalk.green("✅ Auto Sync Complete!"));
+                const commandError = [];
+                let commandLoadSuccess = 0;
 
-            try {
-                fs.writeJsonSync(lastAutoSyncPath, { lastAutoSyncAt: Date.now() }, { spaces: 2 });
-            } catch {}
+                for (const file of Files) {
+                        const pathCommand = path.normalize(fullPathModules + "/" + file);
+
+                        try {
+                                const contentFile = readFileSync(pathCommand, "utf8");
+                                let allPackage = contentFile.match(regExpCheckPackage);
+
+                                if (allPackage) {
+                                        allPackage = allPackage.map(p => p.match(/[`'"]([^`'"]+)[`'"]/)[1])
+                                                .filter(p => p.indexOf("/") !== 0 && p.indexOf("./") !== 0 && p.indexOf("../") !== 0 && p.indexOf(__dirname) !== 0);
+
+                                        for (let packageName of allPackage) {
+                                                if (packageName.startsWith('@'))
+                                                        packageName = packageName.split('/').slice(0, 2).join('/');
+                                                else packageName = packageName.split('/')[0];
+
+                                                if (!packageAlready.includes(packageName)) {
+                                                        packageAlready.push(packageName);
+
+                                                        if (!existsSync(`${process.cwd()}/node_modules/${packageName}`)) {
+                                                                console.log(`[+] Installing package: ${packageName}`);
+                                                                try {
+                                                                        await exec(`npm install ${packageName}`);
+                                                                        console.log(`[✓] Installed: ${packageName}`);
+                                                                }
+                                                                catch {
+                                                                        console.log(`[✖] Failed installing ${packageName}`);
+                                                                        throw new Error(`Can't install package ${packageName}`);
+                                                                }
+                                                        }
+                                                }
+                                        }
+                                }
+
+                                global.temp.contentScripts[folderModules][file] = contentFile;
+
+                                const command = require(pathCommand);
+                                command.location = pathCommand;
+
+                                const configCommand = command.config;
+                                const commandName = configCommand.name;
+
+                                if (!configCommand)
+                                        throw new Error(`config of ${text} undefined`);
+                                if (!configCommand.category)
+                                        throw new Error(`category of ${text} undefined`);
+                                if (!commandName)
+                                        throw new Error(`name of ${text} undefined`);
+                                if (!command.onStart)
+                                        throw new Error(`onStart of ${text} undefined`);
+
+                                const { onFirstChat, onChat, onLoad, onEvent, onAnyEvent } = command;
+                                const { envGlobal, envConfig } = configCommand;
+                                const { aliases } = configCommand;
+
+                                const validAliases = [];
+                                if (aliases) {
+                                        if (!Array.isArray(aliases))
+                                                throw new Error("The value of \"config.aliases\" must be array!");
+
+                                        for (const alias of aliases) {
+                                                if (aliases.filter(item => item == alias).length > 1)
+                                                        throw new Error(`alias "${alias}" duplicate in ${text} "${commandName}"`);
+
+                                                if (GoatBot.aliases.has(alias))
+                                                        throw new Error(`alias "${alias}" already exists in another command`);
+
+                                                validAliases.push(alias);
+                                        }
+
+                                        for (const alias of validAliases)
+                                                GoatBot.aliases.set(alias, commandName);
+                                }
+
+                                if (onLoad)
+                                        await onLoad({ api, threadModel, userModel, dashBoardModel, globalModel, threadsData, usersData, dashBoardData, globalData });
+
+                                if (onChat) GoatBot.onChat.push(commandName);
+                                if (onFirstChat) GoatBot.onFirstChat.push({ commandName, threadIDsChattedFirstTime: [] });
+                                if (onEvent) GoatBot.onEvent.push(commandName);
+                                if (onAnyEvent) GoatBot.onAnyEvent.push(commandName);
+
+                                GoatBot[setMap].set(commandName.toLowerCase(), command);
+                                commandLoadSuccess++;
+
+                        } catch (error) {
+                                commandError.push({ name: file, error });
+                        }
+                }
+
+                if (commandError.length > 0) {
+                        log.err("LOADED", `Error loading some ${text}s`);
+                        for (const item of commandError)
+                                console.log(` ✖ ${item.name}: ${item.error.message}`);
+                }
         }
-        catch (err) {
-            spin._stop();
-            log.error('DATABASE', getText('loadData', 'refreshThreadDataError'), err);
-        }
-        finally {
-            api.setOptions({
-                logLevel: global.GoatBot.config.optionsFca.logLevel
-            });
-        }
-    }
-    else if (api && global.GoatBot.config.database.autoSyncWhenStart == true && !shouldAutoSync) {
-        log.info('DATABASE', `Auto sync skipped — last ran ${Math.round((Date.now() - lastAutoSyncAt) / 60000)}m ago (min interval 6h)`);
-    }
-
-    console.log(header("💻 SYSTEM READY"));
-
-    if (api && typeof api._connectE2EEAndMerge === "function" && global.GoatBot.config.e2ee?.enable !== false) {
-        await api._connectE2EEAndMerge();
-    }
-
-    return {
-        threadModel: threadModel || null,
-        userModel: userModel || null,
-        dashBoardModel: dashBoardModel || null,
-        globalModel: globalModel || null,
-        threadsData,
-        usersData,
-        dashBoardData,
-        globalData,
-        sequelize
-    };
 };
