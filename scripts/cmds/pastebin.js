@@ -61,7 +61,7 @@ module.exports = {
 ├─➤ 📁 𝐅𝐢𝐥𝐞 : ${name}.js
 ├─➤ 🔗 𝐋𝐢𝐧𝐤 : ${data.raw}
 │
-╰─❖ 𝐌𝐚𝐫𝐮𝐟'𝐬 𝐁𝐨𝐭`,
+╰─❖ 𝐌𝐚𝐑𝐮𝐅'𝐬 𝐁𝐨𝐓 💫🪽`,
         event.threadID,
         event.messageID
       );
