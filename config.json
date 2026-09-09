@@ -9,20 +9,20 @@
     "intervalGetNewCookie": 1440,
     "notes": "Automatically retrieves new cookies every x minutes. Recommended: 1440 (1 day)."
   },
-  "antiInbox": true,
+  "antiInbox": false,
   "language": "en",
   "notesLanguage": "change language using ISO 639-1 code",
   "nickNameBot": "👑 𝐌𝐚𝐑𝐮𝐅 𝐁𝐨𝐭 💫🪽",
-  "prefix": "?",
+  "prefix": "!",
   "enableTypingIndicator": true,
-  "typingDuration": 2000,
+  "typingDuration": 1500,
   "notesTypingIndicator": "true = show 'is typing...' before every reply (more human-like, adds visible delay) | false = reply instantly, no typing shown",
   "noPrefix": {
     "enable": false,
     "notes": "true = only bot admins can use commands without prefix | false = everyone must use prefix"
   },
   "e2ee": {
-    "enable": false,
+    "enable": true,
     "notes": "true = connect E2EE messaging layer on startup | false = skip E2EE entirely, MQTT only"
   },
   "adminOnly": {
@@ -31,7 +31,7 @@
   },
   "adminBot": [
     "61594340600100",
-    "61593552526608",
+    " ",
     " "
   ],
   "reactUnsend": {
