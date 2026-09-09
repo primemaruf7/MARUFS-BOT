@@ -13,7 +13,7 @@ module.exports = {
     description: {
       en: "Add users to the current group."
     },
-    category: "box chat",
+    category: "group",
     guide: {
       en: "{pn} <uid>\n{pn} <uid1> <uid2>\nReply to a user's message and use {pn}"
     }
