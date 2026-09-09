@@ -15,7 +15,7 @@ module.exports = {
     role: 0,
     shortDescription: "স্বয়ংক্রিয়ভাবে seen সিস্টেম",
     longDescription: "বট স্বয়ংক্রিয়ভাবে সকল নতুন মেসেজ seen করবে।",
-    category: "auto",
+    category: "system",
     guide: {
       en: "{pn} on/off",
     },
