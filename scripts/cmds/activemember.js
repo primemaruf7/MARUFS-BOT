@@ -1,7 +1,7 @@
 module.exports = {
   config: {
     name: "activemember",
-    aliases: ["am"],
+    aliases: [],
     version: "1.0.0",
     author: "𝐌𝐚𝐑𝐮𝐅",
     countDown: 5,
