@@ -1,42 +1,30 @@
 module.exports = {
-        config: {
-                name: "all",
-                version: "1.2",
-                author: "NTKhang",
-                countDown: 5,
-                role: 1,
-                description: {
-                        vi: "Tag tất cả thành viên trong nhóm chat của bạn",
-                        en: "Tag all members in your group chat"
-                },
-                category: "box chat",
-                guide: {
-                        vi: "   {pn} [nội dung | để trống]",
-                        en: "   {pn} [content | empty]"
-                }
-        },
+ config: {
+ name: "all",
+ version: "2.2.0",
+ author: "𝐌𝐚𝐑𝐮𝐅",
+ countDown: 5,
+ role: 0,
+ shortDescription: "Tag all members",
+ longDescription: "Group er shobai ke ekshathe tag kore",
+ category: "group",
+ guide: { en: "{pn} [message]" }
+ },
 
-        onStart: async function ({ message, event, args }) {
-                const { participantIDs } = event;
-                const lengthAllUser = participantIDs.length;
-                const mentions = [];
-                let body = args.join(" ") || "@all";
-                let bodyLength = body.length;
-                let i = 0;
-                for (const uid of participantIDs) {
-                        let fromIndex = 0;
-                        if (bodyLength < lengthAllUser) {
-                                body += body[bodyLength - 1];
-                                bodyLength++;
-                        }
-                        if (body.slice(0, i).lastIndexOf(body[i]) != -1)
-                                fromIndex = i;
-                        mentions.push({
-                                tag: body[i],
-                                id: uid, fromIndex
-                        });
-                        i++;
-                }
-                message.reply({ body, mentions });
-        }
+ onStart: async function ({ api, event, args, message }) {
+ const { participantIDs } = event;
+ const mentions = [];
+ let body = args.join(" ") || "All";
+
+ let i = 0;
+ for (const uid of participantIDs) {
+ const name = body[i] || " ";
+ mentions.push({ tag: name, id: uid });
+ i++;
+ if(i >= body.length) i = 0;
+ }
+
+ api.setMessageReaction("📢", event.messageID, () => {}, true);
+ return message.reply({ body, mentions });
+ }
 };
