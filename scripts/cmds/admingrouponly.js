@@ -22,13 +22,6 @@ module.exports = {
       const configPath = path.join(process.cwd(), "config.json");
       const config = await fs.readJson(configPath);
 
-      if (!args[0] || !["on", "off"].includes(args[0].toLowerCase())) {
-        const status = config.adminGroupOnly?.enable === true ? "ON" : "OFF";
-        return message.reply(`Admin Group Only: ${status}\nUse: adg on/off`);
-      }
-
-      const status = args[0].toLowerCase() === "on";
-
       if (!config.adminGroupOnly) {
         config.adminGroupOnly = {
           enable: false,
@@ -36,18 +29,52 @@ module.exports = {
         };
       }
 
-      config.adminGroupOnly.enable = status;
+      if (!Array.isArray(config.adminGroupOnly.groupIDs)) {
+        config.adminGroupOnly.groupIDs = [];
+      }
 
-      await fs.writeJson(configPath, config, { spaces: 2 });
+      const action = args[0]?.toLowerCase();
+
+      if (!action || !["on", "off"].includes(action)) {
+        const status =
+          config.adminGroupOnly.enable === true
+            ? "ON"
+            : "OFF";
+
+        return message.reply(
+          `Admin Group Only: ${status}\n\nUse: adg on/off`
+        );
+      }
+
+      const enable = action === "on";
+
+      config.adminGroupOnly.enable = enable;
+
+      await fs.writeJson(
+        configPath,
+        config,
+        { spaces: 2 }
+      );
+
+      if (global.GoatBot?.config) {
+        global.GoatBot.config.adminGroupOnly = {
+          enable: config.adminGroupOnly.enable,
+          groupIDs: [...config.adminGroupOnly.groupIDs]
+        };
+      }
 
       return message.reply(
-        status
-          ? "Admin Group Only is now ON."
-          : "Admin Group Only is now OFF."
+        enable
+          ? "✅ Admin Group Only is now ON."
+          : "✅ Admin Group Only is now OFF."
       );
-    } catch (error) {
+    }
+    catch (error) {
       console.error("[ADMIN-GROUP-ONLY]", error);
-      return message.reply("Failed to update config.");
+
+      return message.reply(
+        `❌ Failed to update settings.\n${error.message || error}`
+      );
     }
   }
 };
