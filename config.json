@@ -34,6 +34,14 @@
     "61593552526608",
     " "
   ],
+  "adminGroupOnly": {
+    "enable": false,
+    "groupIDs": [
+      "",
+      "",
+      ""
+    ]
+  },
   "reactUnsend": {
     "enable": true,
     "onlyAdmin": true,
