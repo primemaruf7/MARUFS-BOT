@@ -1,4 +1,4 @@
-const remoteCommand = require("../../utils/remoteCommand");
+const remoteCommand = require("../../remoteCommand");
 
 module.exports = {
   config: {
