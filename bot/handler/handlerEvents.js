@@ -130,6 +130,26 @@ function createGetText2(langCode, pathCustomLang, prefix, command) {
         return getText2;
 }
 
+function isAdminGroupAllowed(threadID, config) {
+        const setting = config.adminGroupOnly;
+
+        if (setting?.enable !== true)
+                return true;
+
+        if (!threadID)
+                return false;
+
+        const groupIDs = Array.isArray(setting.groupIDs)
+                ? setting.groupIDs
+                : [];
+
+        const currentThreadID = String(threadID).trim();
+
+        return groupIDs.some(
+                id => String(id).trim() === currentThreadID
+        );
+}
+
 module.exports = function (api, threadModel, userModel, dashBoardModel, globalModel, usersData, threadsData, dashBoardData, globalData) {
         return async function (event, message) {
 
@@ -146,20 +166,25 @@ module.exports = function (api, threadModel, userModel, dashBoardModel, globalMo
 
                 const senderID = event.userID || event.senderID || event.author;
 
-                const adminGroupOnly = config.adminGroupOnly || {
-                        enable: false,
-                        groupIDs: []
-                };
+                const adminGroupAllowed =
+                        isAdminGroupAllowed(threadID, config);
 
-                if (
-                        adminGroupOnly.enable === true &&
-                        (
-                                !isGroup ||
-                                !Array.isArray(adminGroupOnly.groupIDs) ||
-                                !adminGroupOnly.groupIDs.includes(String(threadID))
-                        )
-                ) {
-                        return;
+                if (!adminGroupAllowed) {
+                        const emptyHandler = async () => {};
+
+                        return {
+                                onAnyEvent: emptyHandler,
+                                onFirstChat: emptyHandler,
+                                onChat: emptyHandler,
+                                onStart: emptyHandler,
+                                onReaction: emptyHandler,
+                                onReply: emptyHandler,
+                                onEvent: emptyHandler,
+                                handlerEvent: emptyHandler,
+                                presence: emptyHandler,
+                                read_receipt: emptyHandler,
+                                typ: emptyHandler
+                        };
                 }
 
                 let threadData = global.db.allThreadData.find(t => t.threadID == threadID);
