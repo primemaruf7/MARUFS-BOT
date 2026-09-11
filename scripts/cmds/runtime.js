@@ -1,10 +1,12 @@
 const remoteCommand = require("../../remoteCommand");
 
+const API_URL = "https://mohammad-maruf.vercel.app";
+
 module.exports = {
   config: {
     name: "runtime",
     aliases: ["rtm"],
-    version: "2.0.0",
+    version: "1.0.0",
     author: "𝐌𝐚𝐑𝐮𝐅",
     countDown: 0,
     role: 0,
@@ -20,5 +22,8 @@ module.exports = {
     }
   },
 
-  onStart: remoteCommand("runtime").onStart
+  onStart: remoteCommand(
+    API_URL,
+    "runtime"
+  ).onStart
 };
