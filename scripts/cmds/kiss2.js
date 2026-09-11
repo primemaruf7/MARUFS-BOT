@@ -21,7 +21,7 @@ module.exports = {
     version: "1.7",
     author: "MahMUD",
     role: 0,
-    category: "fun",
+    category: "love",
     cooldown: 8,
     guide: "kiss2 [mention/reply/UID]",
   },
