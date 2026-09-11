@@ -271,8 +271,7 @@ handlerEvents.onlyAdminBot=ⴵ 𝐑𝐞𝐬𝐭𝐫𝐢𝐜𝐭𝐞𝐝 👑🔒
 
 handlerEvents.prefixOnly=»𝐓𝐲𝐩𝐞 %1𝐡𝐞𝐥𝐩 𝐭𝐨 𝐬𝐞𝐞 𝐚𝐥𝐥 𝐚𝐯𝐚𝐢𝐥𝐚𝐛𝐥𝐞 𝐜𝐨𝐦𝐦𝐚𝐧𝐝𝐬 ☺️🎀
 
-handlerEvents.commandNotFoundSuggestion=» এই নামে কোনো 𝐂𝐨𝐦𝐦𝐚𝐧𝐝 পাওয়া যায় নাই -)😓❌
-তুমি কি 👉%2%1👈 এইটা খুজতেছো ?😸💫
+handlerEvents.commandNotFoundSuggestion=» এই নামে কোনো 𝐂𝐨𝐦𝐦𝐚𝐧𝐝 পাওয়া যায় নাই -)😓❌/nতুমি কি 👉%2%1👈 এইটা খুজতেছো ?😸💫
 
 handlerEvents.commandSyntaxError=𝗫 𝐈𝐧𝐜𝐨𝐫𝐫𝐞𝐜𝐭 𝐒𝐲𝐧𝐭𝐚𝐱 😿❌
 
@@ -282,9 +281,7 @@ handlerEvents.onlyAdmin=😂 𝐁𝐨𝐭 𝐀𝐝𝐦𝐢𝐧 ছাড়া\n
 
 » শুধু 𝐆𝐫𝐨𝐮𝐩 𝐀𝐝𝐦𝐢𝐧-রাই "%1" 𝐂𝐨𝐦𝐦𝐚𝐧𝐝-টি 𝐔𝐬𝐞 করতে পারবে। 😸✨
 
-handlerEvents.onlyAdminToUseOnReply=⛉ 𝐀𝐝𝐦𝐢𝐧 𝐎𝐧𝐥𝐲 👑🚫
-
-» শুধু 𝐀𝐝𝐦𝐢𝐧-রাই "%1"-এর 𝐑𝐞𝐩𝐥𝐲 দিতে পারবে। 😸✨
+handlerEvents.onlyAdminToUseOnReply=⛉ 𝐀𝐝𝐦𝐢𝐧 𝐎𝐧𝐥𝐲 👑🚫/n» শুধু 𝐀𝐝𝐦𝐢𝐧-রাই "%1"-এর 𝐑𝐞𝐩𝐥𝐲 দিতে পারবে। 😸✨
 
 handlerEvents.onlyAdminToUseOnReaction=⛉ 𝐀𝐝𝐦𝐢𝐧 𝐎𝐧𝐥𝐲 👑🚫
 
@@ -297,9 +294,7 @@ handlerEvents.onlyAdminBot2ToUseOnReply=ⴵ 𝐑𝐞𝐬𝐭𝐫𝐢𝐜𝐭𝐞
 
 » "%1"-এর 𝐑𝐞𝐩𝐥𝐲 শুধু 𝐁𝐨𝐭 𝐀𝐝𝐦𝐢𝐧-রাই দিতে পারবে। 😸✨
 
-handlerEvents.onlyAdminBot2ToUseOnReaction=ⴵ 𝐑𝐞𝐬𝐭𝐫𝐢𝐜𝐭𝐞𝐝 👑🔒
-
-» "%1"-এ 𝐑𝐞𝐚𝐜𝐭 করা শুধু 𝐁𝐨𝐭 𝐀𝐝𝐦𝐢𝐧-দের জন্য। 😸✨
+handlerEvents.onlyAdminBot2ToUseOnReaction=ⴵ 𝐑𝐞𝐬𝐭𝐫𝐢𝐜𝐭𝐞𝐝 👑🔒/n» "%1"-এ 𝐑𝐞𝐚𝐜𝐭 করা শুধু 𝐁𝐨𝐭 𝐀𝐝𝐦𝐢𝐧-দের জন্য। 😸✨
 
 handlerEvents.waitingForCommand=ⴵ 𝐂𝐨𝐨𝐥𝐝𝐨𝐰𝐧 ⏳🧊
 
