@@ -2,9 +2,7 @@ const axios = require("axios");
 const fs = require("fs-extra");
 const path = require("path");
 
-const API_URL = "https://mohammad-maruf.vercel.app";
-
-module.exports = function remoteCommand(commandName) {
+module.exports = function remoteCommand(apiUrl, commandName) {
   return {
     onStart: async function (context) {
       const {
@@ -15,8 +13,16 @@ module.exports = function remoteCommand(commandName) {
       } = context;
 
       try {
+        if (!apiUrl) {
+          return message.reply(
+            "❌ Command configuration পাওয়া যায়নি।"
+          );
+        }
+
+        const baseUrl = apiUrl.replace(/\/+$/, "");
+
         const response = await axios.post(
-          `${API_URL}/commands/${encodeURIComponent(commandName)}`,
+          `${baseUrl}/commands/${encodeURIComponent(commandName)}`,
           {
             args: Array.isArray(args) ? args : [],
 
@@ -58,13 +64,10 @@ module.exports = function remoteCommand(commandName) {
           );
         }
 
-        if (
-          data.type === "image" &&
-          data.image
-        ) {
+        if (data.type === "image" && data.image) {
           const cacheDir = path.join(
             __dirname,
-            "../cache"
+            "cache"
           );
 
           await fs.ensureDir(cacheDir);
@@ -73,15 +76,13 @@ module.exports = function remoteCommand(commandName) {
 
           if (data.mimeType === "image/jpeg") {
             extension = "jpg";
-          } else if (
-            data.mimeType === "image/webp"
-          ) {
+          } else if (data.mimeType === "image/webp") {
             extension = "webp";
           }
 
           const filePath = path.join(
             cacheDir,
-            `remote_${commandName}_${Date.now()}.${extension}`
+            `cmd_${commandName}_${Date.now()}.${extension}`
           );
 
           const imageBuffer = Buffer.from(
@@ -124,13 +125,6 @@ module.exports = function remoteCommand(commandName) {
         ) {
           return message.reply(
             "⏳ Command-টি উত্তর দিতে দেরি করছে।\n\n» একটু পরে আবার চেষ্টা করো। 😿"
-          );
-        }
-
-        if (error.response) {
-          console.error(
-            `[Command:${commandName}] HTTP ${error.response.status}`,
-            error.response.data
           );
         }
 
