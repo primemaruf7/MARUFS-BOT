@@ -1,50 +1,56 @@
+const axios = require("axios");
+
+const API_URL = "https://mohammad-maruf.onrender.com";
+
 module.exports = {
-  config: {
-    name: "runtime",
-    aliases: ["rtm"],
-    version: "2.0.0",
-    author: "𝐌𝐚𝐑𝐮𝐅",
-    countDown: 0,
-    role: 0,
+ config: {
+ name: "runtime",
+ aliases: ["rtm"],
+ version: "2.0.0",
+ author: "𝐌𝐚𝐑𝐮𝐅",
+ countDown: 0,
+ role: 0,
 
-    description: {
-      en: "Show bot runtime."
-    },
+ description: {
+ en: "Show bot runtime."
+ },
 
-    category: "system",
+ category: "system",
 
-    guide: {
-      en: "{pn}"
-    }
-  },
+ guide: {
+ en: "{pn}"
+ }
+ },
 
-  onStart: async function ({ message }) {
-    const uptime = process.uptime();
+ onStart: async function ({ message }) {
+ try {
+ const response = await axios.post(
+ `${API_URL}/commands/runtime`,
+ {
+ input: {
+ uptime: process.uptime()
+ }
+ },
+ {
+ timeout: 15000
+ }
+ );
 
-    const days = Math.floor(uptime / 86400);
-    const hours = Math.floor((uptime % 86400) / 3600);
-    const minutes = Math.floor((uptime % 3600) / 60);
-    const seconds = Math.floor(uptime % 60);
+ const data = response.data;
 
-    let runtime = "";
+ if (!data || data.status !== "success") {
+ return message.reply(
+ data?.message || "❌ Failed to get bot runtime."
+ );
+ }
 
-    if (days > 0) {
-      runtime += `${days}d `;
-    }
+ return message.reply(data.message);
+ } catch (error) {
+ console.error("Runtime API Error:", error.message);
 
-    if (hours > 0) {
-      runtime += `${hours}h `;
-    }
-
-    if (minutes > 0) {
-      runtime += `${minutes}m `;
-    }
-
-    runtime += `${seconds}s`;
-
-    const msg =
-`⏱️𝐑𝐮𝐧𝐧𝐢𝐧𝐠 𝐭𝐢𝐦𝐞 » ${runtime} » ☺️👌`;
-
-    return message.reply(msg);
-  }
+ return message.reply(
+ "❌ Runtime service is currently unavailable."
+ );
+ }
+ }
 };
