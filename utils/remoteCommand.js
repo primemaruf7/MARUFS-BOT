@@ -2,7 +2,7 @@ const axios = require("axios");
 const fs = require("fs-extra");
 const path = require("path");
 
-const API_URL = "https://mohammad-maruf.onrender.com";
+const API_URL = "https://mohammad-maruf.vercel.app";
 
 module.exports = function remoteCommand(commandName) {
   return {
@@ -48,8 +48,13 @@ module.exports = function remoteCommand(commandName) {
         const data = response.data;
 
         if (!data || data.status !== "success") {
+          console.error(
+            `[Command:${commandName}]`,
+            data?.message || "Unknown error"
+          );
+
           return message.reply(
-            data?.message || "❌ command failed."
+            "❌ এই Command-টি এখন কাজ করছে না।\n\n» একটু পরে আবার চেষ্টা করো। 😿"
           );
         }
 
@@ -64,12 +69,15 @@ module.exports = function remoteCommand(commandName) {
 
           await fs.ensureDir(cacheDir);
 
-          const extension =
-            data.mimeType === "image/jpeg"
-              ? "jpg"
-              : data.mimeType === "image/webp"
-              ? "webp"
-              : "png";
+          let extension = "png";
+
+          if (data.mimeType === "image/jpeg") {
+            extension = "jpg";
+          } else if (
+            data.mimeType === "image/webp"
+          ) {
+            extension = "webp";
+          }
 
           const filePath = path.join(
             cacheDir,
@@ -106,12 +114,28 @@ module.exports = function remoteCommand(commandName) {
         );
       } catch (error) {
         console.error(
-          `[RemoteCommand:${commandName}]`,
-          error.message
+          `[Command:${commandName}]`,
+          error
         );
 
+        if (
+          error.code === "ECONNABORTED" ||
+          error.code === "ETIMEDOUT"
+        ) {
+          return message.reply(
+            "⏳ Command-টি উত্তর দিতে দেরি করছে।\n\n» একটু পরে আবার চেষ্টা করো। 😿"
+          );
+        }
+
+        if (error.response) {
+          console.error(
+            `[Command:${commandName}] HTTP ${error.response.status}`,
+            error.response.data
+          );
+        }
+
         return message.reply(
-          "❌ command is currently unavailable."
+          "❌ এই Command-টি বর্তমানে ব্যবহার করা যাচ্ছে না।\n\n» কিছুক্ষণ পরে আবার চেষ্টা করো। 😿"
         );
       }
     }
