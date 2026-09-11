@@ -35,7 +35,7 @@
     " "
   ],
   "adminGroupOnly": {
-    "enable": false,
+    "enable": true,
     "groupIDs": [
       "1062696246745121",
       "1265717778912782",
