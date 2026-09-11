@@ -1,4 +1,6 @@
 const axios = require("axios");
+const fs = require("fs-extra");
+const path = require("path");
 
 const API_URL = "https://mohammad-maruf.onrender.com";
 
@@ -6,6 +8,7 @@ module.exports = function remoteCommand(commandName) {
   return {
     onStart: async function (context) {
       const {
+        api,
         event,
         args,
         message
@@ -38,7 +41,7 @@ module.exports = function remoteCommand(commandName) {
             }
           },
           {
-            timeout: 30000
+            timeout: 60000
           }
         );
 
@@ -46,11 +49,61 @@ module.exports = function remoteCommand(commandName) {
 
         if (!data || data.status !== "success") {
           return message.reply(
-            data?.message || "❌ Remote command failed."
+            data?.message || "❌ command failed."
           );
         }
 
-        return message.reply(data.message);
+        if (
+          data.type === "image" &&
+          data.image
+        ) {
+          const cacheDir = path.join(
+            __dirname,
+            "../cache"
+          );
+
+          await fs.ensureDir(cacheDir);
+
+          const extension =
+            data.mimeType === "image/jpeg"
+              ? "jpg"
+              : data.mimeType === "image/webp"
+              ? "webp"
+              : "png";
+
+          const filePath = path.join(
+            cacheDir,
+            `remote_${commandName}_${Date.now()}.${extension}`
+          );
+
+          const imageBuffer = Buffer.from(
+            data.image,
+            "base64"
+          );
+
+          await fs.writeFile(
+            filePath,
+            imageBuffer
+          );
+
+          return api.sendMessage(
+            {
+              body: data.message || "",
+              attachment: fs.createReadStream(
+                filePath
+              )
+            },
+            event.threadID,
+            () => {
+              fs.remove(filePath).catch(() => {});
+            },
+            event.messageID
+          );
+        }
+
+        return message.reply(
+          data.message || "✅ Done."
+        );
       } catch (error) {
         console.error(
           `[RemoteCommand:${commandName}]`,
@@ -58,7 +111,7 @@ module.exports = function remoteCommand(commandName) {
         );
 
         return message.reply(
-          "❌ Remote command service is currently unavailable."
+          "❌ command is currently unavailable."
         );
       }
     }
