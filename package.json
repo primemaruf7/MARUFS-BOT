@@ -8,6 +8,7 @@
                 "npm": ">=7.0.0"
         },
         "dependencies": {
+                "rmbg": "^1.0.0",
                 "@distube/ytdl-core": "^4.13.3",
                 "@eryxenx/fca": "^1.1.7",
                 "axios": "^1.4.0",
