@@ -20,7 +20,7 @@
 <img src="https://img.shields.io/badge/Facebook-MOHAMMAD%20MARUF-1877F2?style=for-the-badge&logo=facebook&logoColor=white"/>
 </a>
 
-<a href="https://github.com/primemaruf7">
+<a href="https://github.com/maruf-1718">
 <img src="https://img.shields.io/badge/GitHub-MOHAMMAD%20MARUF-181717?style=for-the-badge&logo=github&logoColor=white"/>
 </a>
 
@@ -217,7 +217,7 @@ Please use this project responsibly and respect Facebook's Terms of Service and 
 <img src="https://img.shields.io/badge/Follow%20MOHAMMAD%20MARUF-Facebook-1877F2?style=for-the-badge&logo=facebook&logoColor=white"/>
 </a>
 
-<a href="https://github.com/primemaruf7">
+<a href="https://github.com/maruf-1718">
 <img src="https://img.shields.io/badge/Visit%20GitHub-MOHAMMAD%20MARUF-181717?style=for-the-badge&logo=github&logoColor=white"/>
 </a>
 
