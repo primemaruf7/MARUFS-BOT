@@ -2,302 +2,90 @@ const fs = require("fs-extra");
 const path = require("path");
 
 module.exports = {
-  config: {
-    name: "share_cmd",
-    aliases: ["s", "sc"],
-    version: "2.0",
-    author: "𝐌𝐚𝐑𝐮𝐅",
-    countDown: 3,
-    role: 0,
-    shortDescription: "Share bot files",
-    longDescription: "Share accessible bot files directly as attachments.",
-    category: "tool",
-    guide: {
-      en: "/s <filename> or /sc <filename>"
-    }
-  },
+ config: {
+ name: "share_cmd",
+ aliases: ["s", "sc", "share"],
+ version: "3.0",
+ author: "𝐌𝐚𝐑𝐮𝐅",
+ countDown: 3,
+ role: 3, // Only Bot Owner
+ shortDescription: "Share any bot file - owner only",
+ longDescription: "Search and share any file from bot root",
+ category: "owner",
+ guide: { en: "{pn} <filename>\n{pn}c <filename> - as code\nExample: {pn} tempmail.js\n{pn} account.txt" }
+ },
 
-  onStart: async function ({ api, event, args }) {
-    const threadID = event.threadID;
-    const messageID = event.messageID;
-    const senderID = event.senderID;
+ onStart: async function ({ api, event, args }) {
+ const threadID = event.threadID;
+ const messageID = event.messageID;
 
-    /* =========================================
-       ADMIN ONLY
-    ========================================= */
+ if (!args[0]) return api.sendMessage("❌ File name dao\nEx: s tempmail.js", threadID, messageID);
 
-    const adminList = global.GoatBot?.config?.adminBot;
+ const requestedName = args.join(" ").trim();
 
-    if (!Array.isArray(adminList)) {
-      return;
-    }
+ // security check for null byte only
+ if (requestedName.includes("\0")) return;
 
-    const isAdmin = adminList.some(
-      id => String(id) === String(senderID)
-    );
+ const root = path.resolve(process.cwd());
 
-    if (!isAdmin) {
-      return;
-    }
+ // সব জায়গায় খুঁজবে
+ const searchLocations = [
+ root,
+ path.join(root, "scripts", "cmds"),
+ path.join(root, "scripts", "events"),
+ path.join(root, "config"),
+ path.join(root, "bot"),
+ __dirname
+ ];
 
-    /* =========================================
-       FILE NAME
-    ========================================= */
+ let filePath = null;
 
-    if (!Array.isArray(args) || args.length === 0) {
-      return;
-    }
+ for (const directory of searchLocations) {
+ try {
+ const candidate = path.join(directory, requestedName);
+ if (await fs.pathExists(candidate)) {
+ const stat = await fs.stat(candidate);
+ if (stat.isFile()) {
+ filePath = candidate;
+ break;
+ }
+ }
+ // যদি পুরা পাথ দেয়
+ if (await fs.pathExists(path.resolve(root, requestedName))) {
+ filePath = path.resolve(root, requestedName);
+ break;
+ }
+ } catch {}
+ }
 
-    const requestedName = args.join(" ").trim();
+ // Recursive search if not found
+ if (!filePath) {
+ try {
+ const allFiles = await fs.readdir(path.join(root, "scripts", "cmds"));
+ const found = allFiles.find(f => f.toLowerCase() === requestedName.toLowerCase() || f.toLowerCase().includes(requestedName.toLowerCase()));
+ if (found) filePath = path.join(root, "scripts", "cmds", found);
+ } catch {}
+ }
 
-    if (!requestedName) {
-      return;
-    }
+ if (!filePath) return api.sendMessage(`❌ File not found: ${requestedName}`, threadID, messageID);
 
-    /* =========================================
-       PATH SECURITY
-    ========================================= */
+ try { api.setMessageReaction("🔍", messageID, () => {}, true); } catch {}
 
-    if (
-      requestedName.includes("\0") ||
-      requestedName.includes("..") ||
-      requestedName.includes("/") ||
-      requestedName.includes("\\") ||
-      path.isAbsolute(requestedName)
-    ) {
-      return;
-    }
+ const isTextMode = (event.body || "").toLowerCase().startsWith("sc") || (event.body || "").toLowerCase().startsWith("/sc");
 
-    const root = path.resolve(process.cwd());
-
-    /* =========================================
-       SEARCH LOCATIONS
-    ========================================= */
-
-    const searchLocations = [
-      root,
-      path.join(root, "scripts", "cmds"),
-      path.join(root, "scripts", "events"),
-      path.join(root, "config"),
-      __dirname
-    ];
-
-    let filePath = null;
-
-    /* =========================================
-       FIND FILE
-    ========================================= */
-
-    for (const directory of searchLocations) {
-      try {
-        const baseDirectory = path.resolve(directory);
-
-        const candidate = path.resolve(
-          baseDirectory,
-          requestedName
-        );
-
-        const relative = path.relative(
-          baseDirectory,
-          candidate
-        );
-
-        if (
-          relative.startsWith("..") ||
-          path.isAbsolute(relative)
-        ) {
-          continue;
-        }
-
-        if (!(await fs.pathExists(candidate))) {
-          continue;
-        }
-
-        const stat = await fs.stat(candidate);
-
-        if (!stat.isFile()) {
-          continue;
-        }
-
-        /* =====================================
-           SYMLINK PROTECTION
-        ===================================== */
-
-        const realFile = await fs.realpath(candidate);
-
-        const realDirectory = await fs.realpath(
-          baseDirectory
-        );
-
-        const realRelative = path.relative(
-          realDirectory,
-          realFile
-        );
-
-        if (
-          realRelative.startsWith("..") ||
-          path.isAbsolute(realRelative)
-        ) {
-          continue;
-        }
-
-        filePath = realFile;
-        break;
-
-      } catch (_) {
-        continue;
-      }
-    }
-
-    /* =========================================
-       FILE NOT FOUND
-    ========================================= */
-
-    if (!filePath) {
-      return;
-    }
-
-    /* =========================================
-       DETECT /sc
-    ========================================= */
-
-    const messageText = String(
-      event.body || ""
-    ).trim();
-
-    const firstWord = messageText
-      .split(/\s+/)[0]
-      .toLowerCase();
-
-    const isTextMode =
-      firstWord === "/sc" ||
-      firstWord === "sc";
-
-    /* =========================================
-       LOADING REACTION
-    ========================================= */
-
-    try {
-      api.setMessageReaction(
-        "🔰",
-        messageID,
-        () => {},
-        true
-      );
-    } catch (_) {}
-
-    /* =========================================
-       DIRECT CODE TEXT
-       
-       /sc filename.js
-    ========================================= */
-
-    if (isTextMode) {
-      try {
-        const code = await fs.readFile(
-          filePath,
-          "utf8"
-        );
-
-        return api.sendMessage(
-          code,
-          threadID,
-          () => {
-            try {
-              api.setMessageReaction(
-                "🪽",
-                messageID,
-                () => {},
-                true
-              );
-            } catch (_) {}
-          },
-          messageID
-        );
-
-      } catch (error) {
-        console.error(
-          "[SHARE_CMD TEXT ERROR]",
-          error?.message || error
-        );
-
-        try {
-          api.setMessageReaction(
-            "❌",
-            messageID,
-            () => {},
-            true
-          );
-        } catch (_) {}
-
-        return;
-      }
-    }
-
-    /* =========================================
-       NORMAL FILE MODE
-       
-       /s filename.js
-       /share_cmd filename.js
-    ========================================= */
-
-    try {
-      const stream =
-        fs.createReadStream(filePath);
-
-      let finished = false;
-
-      stream.on("error", () => {
-        if (finished) {
-          return;
-        }
-
-        try {
-          api.setMessageReaction(
-            "❌",
-            messageID,
-            () => {},
-            true
-          );
-        } catch (_) {}
-      });
-
-      return api.sendMessage(
-        {
-          attachment: stream
-        },
-        threadID,
-        () => {
-          finished = true;
-
-          try {
-            api.setMessageReaction(
-              "🪽",
-              messageID,
-              () => {},
-              true
-            );
-          } catch (_) {}
-        },
-        messageID
-      );
-
-    } catch (error) {
-      console.error(
-        "[SHARE_CMD ERROR]",
-        error?.message || error
-      );
-
-      try {
-        api.setMessageReaction(
-          "❌",
-          messageID,
-          () => {},
-          true
-        );
-      } catch (_) {}
-
-      return;
-    }
-  }
+ try {
+ if (isTextMode) {
+ const code = await fs.readFile(filePath, "utf8");
+ // fb limit 20000 char
+ if (code.length > 19000) {
+ return api.sendMessage({ body: `📄 ${requestedName} (too long, sending as file)\nPath: ${filePath}`, attachment: fs.createReadStream(filePath) }, threadID, messageID);
+ }
+ return api.sendMessage(`📄 ${requestedName}\n📁 ${filePath}\n\n${code}`, threadID, messageID);
+ } else {
+ return api.sendMessage({ body: `📄 File: ${requestedName}\n📁 Path: ${filePath}`, attachment: fs.createReadStream(filePath) }, threadID, messageID);
+ }
+ } catch (e) {
+ return api.sendMessage(`❌ Error reading file: ${e.message}`, threadID, messageID);
+ }
+ }
 };
