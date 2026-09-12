@@ -181,7 +181,7 @@ Built for a feature-rich Messenger experience.
 
 # 💬 Messenger Support
 
-Need help, updates, or community support?
+    Need help, updates, or community support?
 
 <div align="center">
 
@@ -192,21 +192,6 @@ Need help, updates, or community support?
 </a>
 
 </div>
-
----
-
-# 🧑‍💻 Development
-
-Want to improve the project?
-
-- 🐛 Report bugs
-- 💡 Suggest features
-- 🔧 Submit improvements
-- ⭐ Star the repository
-- 🍴 Fork the project
-- 📢 Share the project
-
-Every contribution helps make **GOAT MESSENGER** better.
 
 ---
 
