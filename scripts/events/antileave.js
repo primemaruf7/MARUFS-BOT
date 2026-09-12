@@ -29,8 +29,13 @@ module.exports = {
       const boldName = userName.split("").map(c => boldMap[c] || c).join("");
 
       const form = {
-        body: `${boldName} নামের এক ছাগল লিভ নিলো -)🤣🍌`
-      };
+  body: `🚨 BREAKING NEWS 🚨
+
+😂 ⎯⎯“${boldName} নামের এক ছাগল গ্রুপ থেকে পালিয়ে গেলো -))🤣🤣🫵
+
+👋 যাই হোক, বিদায় !
+তোমার লিভে গ্রুপের WiFi-ও খুশি হয়ে গেছে! 😭😂`
+};
 
       try {
         await message.send(form);
