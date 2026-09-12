@@ -1,14 +1,14 @@
 <div align="center">
 
-<img src="https://readme-typing-svg.demolab.com?font=Orbitron&weight=800&size=30&duration=2500&pause=700&color=00F7FF&center=true&vCenter=true&width=850&lines=%F0%9F%91%8B+WELCOME+EVERYONE+%F0%9F%91%8B;%F0%9F%91%91+WELCOME+TO+PRIME+MARUF'S+WORLD+%F0%9F%91%91;%F0%9F%90%90+GOAT+MESSENGER+%7C+POWERED+BY+PRIME+MARUF" alt="WELCOME EVERYONE"/>
+<img src="https://readme-typing-svg.demolab.com?font=Orbitron&weight=800&size=30&duration=2500&pause=700&color=00F7FF&center=true&vCenter=true&width=850&lines=%F0%9F%91%8B+WELCOME+EVERYONE+%F0%9F%91%8B;%F0%9F%91%91+WELCOME+TO+MOHAMMAD+MARUF'S+WORLD+%F0%9F%91%91;%F0%9F%90%90+GOAT+MESSENGER+%7C+POWERED+BY+MOHAMMAD+MARUF" alt="WELCOME EVERYONE"/>
 
 <br>
 
-<img src="assets/prime-maruf.jpg" width="380" alt="PRIME MARUF"/>
+<img src="assets/prime-maruf.jpg" width="380" alt="MOHAMMAD MARUF"/>
 
 <br><br>
 
-# 👑 PRIME MARUF
+# 👑 MOHAMMAD MARUF
 
 ## 🐐 GOAT MESSENGER
 
