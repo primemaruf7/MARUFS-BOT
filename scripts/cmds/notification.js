@@ -1,138 +1,246 @@
+"use strict";
+
 const { getStreamsFromAttachment } = global.utils;
 
 module.exports = {
-	config: {
-		name: "notification",
-		aliases: ["notify", "noti"],
-		version: "1.8",
-		author: "NTKhang Fixed By EryXenX",
-		countDown: 5,
-		role: 2,
-		description: {
-			vi: "Gửi thông báo từ admin đến all box",
-			en: "Send notification from admin to all box"
-		},
-		category: "owner",
-		guide: {
-			en: "{pn} <tin nhắn>"
-		},
-		envConfig: {
-			delayPerGroup: 250
-		}
-	},
+  config: {
+    name: "notification",
+    aliases: ["notify", "noti"],
+    version: "1.0.0",
+    author: "𝐌𝐚𝐑𝐮𝐅",
+    countDown: 5,
+    role: 2,
+    description: {
+      en: "Send notification from admin to all groups"
+    },
+    category: "owner",
+    guide: {
+      en: "{pn} <message>"
+    },
+    envConfig: {
+      delayPerGroup: 250
+    }
+  },
 
-	langs: {
-		vi: {
-			missingMessage: "Vui lòng nhập tin nhắn bạn muốn gửi đến tất cả các nhóm",
-			sendingNotification: "📡 Đang gửi thông báo đến %1 nhóm...\n⏳ Vui lòng chờ...",
-			sentNotification: "📊 Kết quả thông báo\n─────────────────────\n✅ Thành công : %1 nhóm",
-			errorSendingNotification: "❌ Thất bại   : %1 nhóm\n%2"
-		},
-		en: {
-			missingMessage: "Please enter the message you want to send to all groups",
-			sendingNotification: "📡 Sending notification to %1 groups...\n⏳ Please wait...",
-			sentNotification: "📊 Notification Report\n─────────────────────\n✅ Success : %1 groups",
-			errorSendingNotification: "❌ Failed  : %1 groups\n%2"
-		},
-		bn: {
-			missingMessage: "অনুগ্রহ করে সব গ্রুপে পাঠাতে চান এমন message লিখুন",
-			sendingNotification: "📡 %1 টি গ্রুপে নোটিফিকেশন পাঠানো হচ্ছে...\n⏳ অপেক্ষা করুন...",
-			sentNotification: "📊 নোটিফিকেশন রিপোর্ট\n─────────────────────\n✅ সফল : %1 টি গ্রুপ",
-			errorSendingNotification: "❌ ব্যর্থ : %1 টি গ্রুপ\n%2"
-		},
-		tl: {
-			missingMessage: "Mangyaring ilagay ang mensaheng gusto mong ipadala sa lahat ng grupo",
-			sendingNotification: "📡 Nagpapadala ng notification sa %1 grupo...\n⏳ Mangyaring maghintay...",
-			sentNotification: "📊 Ulat ng Notification\n─────────────────────\n✅ Tagumpay : %1 grupo",
-			errorSendingNotification: "❌ Nabigo  : %1 grupo\n%2"
-		},
-		hi: {
-			missingMessage: "Kripya wo message dalein jo aap sabhi groups mein bhejna chahte hain",
-			sendingNotification: "📡 %1 groups mein notification bheja ja raha hai...\n⏳ Kripya prateeksha karein...",
-			sentNotification: "📊 Notification Report\n─────────────────────\n✅ Safal : %1 groups",
-			errorSendingNotification: "❌ Asafal : %1 groups\n%2"
-		},
-		ar: {
-			missingMessage: "الرجاء إدخال الرسالة التي تريد إرسالها لجميع المجموعات",
-			sendingNotification: "📡 جاري إرسال الإشعار إلى %1 مجموعة...\n⏳ يرجى الانتظار...",
-			sentNotification: "📊 تقرير الإشعار\n─────────────────────\n✅ نجاح : %1 مجموعة",
-			errorSendingNotification: "❌ فشل : %1 مجموعة\n%2"
-		}
-	},
+  langs: {
+    en: {
+      missingMessage:
+        "❌ Please enter the message you want to send to all groups.",
 
-	onStart: async function ({ message, api, event, args, commandName, envCommands, threadsData, usersData, getLang }) {
-		const { delayPerGroup } = envCommands[commandName];
-		if (!args[0])
-			return message.reply(getLang("missingMessage"));
+      sendingNotification:
+        "📡 Sending notification to %1 groups...\n" +
+        "⏳ Please wait...",
 
-		const senderID = event.senderID;
-		const senderName = await usersData.get(senderID, "name") || "Admin";
+      sentNotification:
+        "╭━━━━━━━━━━━━━━━━━━━━╮\n" +
+        "      📊 NOTIFICATION REPORT\n" +
+        "╰━━━━━━━━━━━━━━━━━━━━╯\n\n" +
+        "✅ Successfully sent : %1 groups",
 
-		const attachmentStreams = await getStreamsFromAttachment(
-			[
-				...event.attachments,
-				...(event.messageReply?.attachments || [])
-			].filter(item => ["photo", "png", "animated_image", "video", "audio"].includes(item.type))
-		);
+      errorSendingNotification:
+        "❌ Failed : %1 groups\n%2"
+    }
+  },
 
-		const msgText = args.join(" ");
-		const body = `📢 ADMIN NOTIFICATION\n─────────────────────\n  ${msgText}\n─────────────────────\n👤 ${senderName}`;
+  onStart: async function ({
+    message,
+    api,
+    event,
+    args,
+    commandName,
+    envCommands,
+    threadsData,
+    usersData,
+    getLang
+  }) {
+    // Safely handle missing command config
+    const commandConfig =
+      envCommands?.[commandName] || {};
 
-		const formSend = {
-			body,
-			mentions: [
-				{
-					tag: senderName,
-					id: senderID
-				}
-			]
-		};
-		if (attachmentStreams && attachmentStreams.length > 0)
-			formSend.attachment = attachmentStreams;
+    const delayPerGroup =
+      Number.isFinite(Number(commandConfig.delayPerGroup))
+        ? Number(commandConfig.delayPerGroup)
+        : 250;
 
-		const allThreadID = (await threadsData.getAll()).filter(t => t.isGroup && t.members.find(m => m.userID == api.getCurrentUserID())?.inGroup);
-		message.reply(getLang("sendingNotification", allThreadID.length));
+    if (!args?.[0])
+      return message.reply(getLang("missingMessage"));
 
-		let sendSucces = 0;
-		const sendError = [];
-		const wattingSend = [];
+    const senderID = event.senderID;
 
-		for (const thread of allThreadID) {
-			const tid = thread.threadID;
-			try {
-				wattingSend.push({
-					threadID: tid,
-					pending: api.sendMessage(formSend, tid)
-				});
-				await new Promise(resolve => setTimeout(resolve, delayPerGroup));
-			}
-			catch (e) {
-				sendError.push({ threadIDs: [tid], errorDescription: e?.error || e?.message || String(e) });
-			}
-		}
+    const senderName =
+      (await usersData.get(senderID, "name")) || "Admin";
 
-		for (const sended of wattingSend) {
-			try {
-				await sended.pending;
-				sendSucces++;
-			}
-			catch (e) {
-				const errorDescription = e?.error || e?.message || String(e);
-				if (!sendError.some(item => item.errorDescription == errorDescription))
-					sendError.push({
-						threadIDs: [sended.threadID],
-						errorDescription
-					});
-				else
-					sendError.find(item => item.errorDescription == errorDescription).threadIDs.push(sended.threadID);
-			}
-		}
+    // Safely handle missing attachment arrays
+    const eventAttachments = Array.isArray(event.attachments)
+      ? event.attachments
+      : [];
 
-		let msg = "";
-		if (sendSucces > 0)
-			msg += getLang("sentNotification", sendSucces) + "\n";
-		if (sendError.length > 0)
-			msg += getLang("errorSendingNotification", sendError.reduce((a, b) => a + b.threadIDs.length, 0), sendError.reduce((a, b) => a + `\n • ${b.errorDescription}\n   └ ${b.threadIDs.join(", ")}`, ""));
-		message.reply(msg);
-	}
+    const replyAttachments = Array.isArray(
+      event.messageReply?.attachments
+    )
+      ? event.messageReply.attachments
+      : [];
+
+    const attachments = [
+      ...eventAttachments,
+      ...replyAttachments
+    ].filter(
+      item =>
+        item &&
+        ["photo", "png", "animated_image", "video", "audio"].includes(
+          item.type
+        )
+    );
+
+    let attachmentStreams = [];
+
+    if (attachments.length > 0) {
+      try {
+        attachmentStreams =
+          await getStreamsFromAttachment(attachments);
+      } catch (error) {
+        console.error("Attachment error:", error);
+        attachmentStreams = [];
+      }
+    }
+
+    const msgText = args.join(" ");
+
+    const body =
+      `╭━━━━━━━━━━━━━━━━━━━━╮\n` +
+      `      📢 ADMIN NOTIFICATION\n` +
+      `╰━━━━━━━━━━━━━━━━━━━━╯\n\n` +
+      `💬 ${msgText}\n\n` +
+      `━━━━━━━━━━━━━━━━━━━━━━\n` +
+      `👤 ${senderName}`;
+
+    const formSend = {
+      body,
+      mentions: [
+        {
+          tag: senderName,
+          id: senderID
+        }
+      ]
+    };
+
+    if (
+      Array.isArray(attachmentStreams) &&
+      attachmentStreams.length > 0
+    ) {
+      formSend.attachment = attachmentStreams;
+    }
+
+    const botID = api.getCurrentUserID();
+
+    const allThreads = await threadsData.getAll();
+
+    const allThreadID = (Array.isArray(allThreads)
+      ? allThreads
+      : []
+    ).filter(
+      t =>
+        t?.isGroup &&
+        Array.isArray(t.members) &&
+        t.members.some(
+          m =>
+            m?.userID == botID &&
+            m?.inGroup
+        )
+    );
+
+    message.reply(
+      getLang(
+        "sendingNotification",
+        allThreadID.length
+      )
+    );
+
+    let sendSucces = 0;
+    const sendError = [];
+    const wattingSend = [];
+
+    for (const thread of allThreadID) {
+      const tid = thread.threadID;
+
+      try {
+        wattingSend.push({
+          threadID: tid,
+          pending: api.sendMessage(formSend, tid)
+        });
+
+        await new Promise(resolve =>
+          setTimeout(resolve, delayPerGroup)
+        );
+      } catch (e) {
+        sendError.push({
+          threadIDs: [tid],
+          errorDescription:
+            e?.error ||
+            e?.message ||
+            String(e)
+        });
+      }
+    }
+
+    for (const sended of wattingSend) {
+      try {
+        await sended.pending;
+        sendSucces++;
+      } catch (e) {
+        const errorDescription =
+          e?.error ||
+          e?.message ||
+          String(e);
+
+        const existingError = sendError.find(
+          item =>
+            item.errorDescription ===
+            errorDescription
+        );
+
+        if (existingError) {
+          existingError.threadIDs.push(
+            sended.threadID
+          );
+        } else {
+          sendError.push({
+            threadIDs: [sended.threadID],
+            errorDescription
+          });
+        }
+      }
+    }
+
+    let msg = "";
+
+    if (sendSucces > 0) {
+      msg +=
+        getLang(
+          "sentNotification",
+          sendSucces
+        ) + "\n";
+    }
+
+    if (sendError.length > 0) {
+      msg += getLang(
+        "errorSendingNotification",
+        sendError.reduce(
+          (a, b) =>
+            a + b.threadIDs.length,
+          0
+        ),
+        sendError.reduce(
+          (a, b) =>
+            a +
+            `\n • ${b.errorDescription}\n` +
+            `   └ ${b.threadIDs.join(", ")}`,
+          ""
+        )
+      );
+    }
+
+    if (msg)
+      message.reply(msg);
+  }
 };
