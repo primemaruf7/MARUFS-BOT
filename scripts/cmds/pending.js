@@ -1,179 +1,201 @@
 "use strict";
 
 module.exports = {
-  config: {
-    name: "pending",
-    version: "1.0.9",
-    author: "EryXenX",
-    aliases: [],
-    role: 2,
-    shortDescription: "Manage bot's waiting groups",
-    longDescription: "Approve or cancel pending groups",
-    category: "owner",
-    countDown: 10
-  },
+ config: {
+ name: "pending",
+ version: "1.0.0",
+ author: "𝐌𝐚𝐫𝐮𝐅",
+ aliases: [],
+ role: 2,
+ shortDescription: "Manage bot's pending groups",
+ longDescription: "Approve or cancel groups waiting for bot approval",
+ category: "owner",
+ countDown: 10
+ },
 
-  languages: {
-    en: {
-      invaildNumber: "%1 is not a valid number",
-      cancelSuccess: "❌ Cancelled %1 thread(s)",
-      approveSuccess: "✅ Approved %1 thread(s)",
-      cantGetPendingList: "⚠️ Can't get pending list",
-      returnListClean: "No pending group found"
-    },
-    bn: {
-      invaildNumber: "%1 সঠিক নাম্বার নয়",
-      cancelSuccess: "❌ %1 টি থ্রেড বাতিল করা হয়েছে",
-      approveSuccess: "✅ %1 টি থ্রেড অনুমোদন করা হয়েছে",
-      cantGetPendingList: "⚠️ পেন্ডিং লিস্ট আনা যাচ্ছে না",
-      returnListClean: "কোনো পেন্ডিং গ্রুপ পাওয়া যায়নি"
-    },
-    hi: {
-      invaildNumber: "%1 एक मान्य नंबर नहीं है",
-      cancelSuccess: "❌ %1 थ्रेड रद्द किए गए",
-      approveSuccess: "✅ %1 थ्रेड स्वीकृत किए गए",
-      cantGetPendingList: "⚠️ पेंडिंग लिस्ट प्राप्त नहीं हो सकी",
-      returnListClean: "कोई पेंडिंग ग्रुप नहीं मिला"
-    },
-    tl: {
-      invaildNumber: "%1 ay hindi wastong numero",
-      cancelSuccess: "❌ %1 thread(s) ang kinansela",
-      approveSuccess: "✅ %1 thread(s) ang na-approve",
-      cantGetPendingList: "⚠️ Hindi makuha ang pending list",
-      returnListClean: "Walang nahanap na pending group"
-    },
-    ar: {
-      invaildNumber: "%1 ليس رقمًا صالحًا",
-      cancelSuccess: "❌ تم إلغاء %1 محادثة",
-      approveSuccess: "✅ تمت الموافقة على %1 محادثة",
-      cantGetPendingList: "⚠️ لا يمكن الحصول على قائمة الانتظار",
-      returnListClean: "لم يتم العثور على أي مجموعة معلقة"
-    }
-  },
+ languages: {
+ en: {
+ invaildNumber: "❌ %1 is not a valid number",
+ cancelSuccess: "╭──────────────╮\n ❌ CANCELLED\n╰──────────────╯\n\n🗑️ %1 thread(s) cancelled successfully.",
+ approveSuccess: "╭──────────────╮\n ✅ APPROVED\n╰──────────────╯\n\n🎉 %1 thread(s) approved successfully.",
+ cantGetPendingList: "╭──────────────╮\n ⚠️ ERROR\n╰──────────────╯\n\nUnable to fetch the pending group list.",
+ returnListClean: "╭──────────────╮\n 📭 EMPTY\n╰──────────────╯\n\nNo pending groups found."
+ }
+ },
 
-  _getText(key, ...args) {
-    const lang = global.GoatBot?.config?.language || "en";
-    const text = (this.languages[lang] && this.languages[lang][key]) || this.languages.en[key] || key;
-    return args.length
-      ? text.replace("%1", args[0]).replace("%2", args[1] || "")
-      : text;
-  },
+ _getText(key, ...args) {
+ const text = this.languages.en[key] || key;
 
-  onStart: async function ({ api, event }) {
-    const { threadID, messageID, senderID } = event;
+ return args.length
+ ? text.replace("%1", args[0]).replace("%2", args[1] || "")
+ : text;
+ },
 
-    let pendingList = [];
+ onStart: async function ({ api, event }) {
+ const { threadID, messageID, senderID } = event;
 
-    try {
-      const other = await api.getThreadList(100, null, ["OTHER"]);
-      const pending = await api.getThreadList(100, null, ["PENDING"]);
+ let pendingList = [];
 
-      pendingList = [...other, ...pending].filter(
-        g => g.isGroup && g.isSubscribed
-      );
-    } catch {
-      return api.sendMessage(
-        this._getText("cantGetPendingList"),
-        threadID,
-        messageID
-      );
-    }
+ try {
+ const other = await api.getThreadList(100, null, ["OTHER"]);
+ const pending = await api.getThreadList(100, null, ["PENDING"]);
 
-    if (!pendingList.length)
-      return api.sendMessage(
-        this._getText("returnListClean"),
-        threadID,
-        messageID
-      );
+ pendingList = [...other, ...pending].filter(
+ g => g.isGroup && g.isSubscribed
+ );
+ } catch {
+ return api.sendMessage(
+ this._getText("cantGetPendingList"),
+ threadID,
+ messageID
+ );
+ }
 
-    const prefix = global.GoatBot?.config?.prefix || "!";
+ if (!pendingList.length) {
+ return api.sendMessage(
+ this._getText("returnListClean"),
+ threadID,
+ messageID
+ );
+ }
 
-    let msg = "";
-    pendingList.forEach((g, i) => {
-      msg += `${i + 1}️⃣ ${g.name}\n🆔 ${g.threadID}\n\n`;
-    });
+ const prefix = global.GoatBot?.config?.prefix || "!";
 
-    const finalMsg =
-`📋 Pending Groups (${pendingList.length})
-━━━━━━━━━━━━━━━━━━━
+ let msg = "";
 
-${msg}━━━━━━━━━━━━━━━━━━━
-✅ Approve » ${prefix}pending 1 2
-❌ Cancel  » ${prefix}pending c 1 2`;
+ pendingList.forEach((g, i) => {
+ msg +=
+ `╭─〔 ${i + 1} 〕\n` +
+ `│ 👥 ${g.name}\n` +
+ `│ 🆔 ${g.threadID}\n` +
+ `╰──────────────\n\n`;
+ });
 
-    return api.sendMessage(finalMsg, threadID, (err, info) => {
-      global.GoatBot.onReply.set(info.messageID, {
-        commandName: this.config.name,
-        author: senderID,
-        pending: pendingList
-      });
-    }, messageID);
-  },
+ const finalMsg =
+`╭━━━━━━━━━━━━━━━━━━━━╮
+ 📋 PENDING GROUPS
+╰━━━━━━━━━━━━━━━━━━━━╯
 
-  onReply: async function ({ event, Reply, api }) {
-    const { author, pending } = Reply;
+📊 Total Pending: ${pendingList.length}
+━━━━━━━━━━━━━━━━━━━━━━
 
-    if (String(event.senderID) !== String(author)) return;
+${msg}━━━━━━━━━━━━━━━━━━━━━━
 
-    const input = event.body.trim().toLowerCase().split(/\s+/);
-    const botID = api.getCurrentUserID();
-    const prefix = global.GoatBot?.config?.prefix || "!";
-    let count = 0;
+🛠️ ACTIONS
 
-    if (input[0] === "c" || input[0] === "cancel") {
-      for (let i = 1; i < input.length; i++) {
-        const idx = parseInt(input[i]);
+✅ Approve:
+${prefix}pending 1 2 3
 
-        if (isNaN(idx) || idx <= 0 || idx > pending.length)
-          return api.sendMessage(
-            this._getText("invaildNumber", input[i]),
-            event.threadID
-          );
+❌ Cancel:
+${prefix}pending c 1 2 3
 
-        await api.removeUserFromGroup(botID, pending[idx - 1].threadID);
-        count++;
-      }
+💡 Reply to this message with your choice.
+━━━━━━━━━━━━━━━━━━━━━━`;
 
-      return api.sendMessage(
-        this._getText("cancelSuccess", count),
-        event.threadID
-      );
-    }
+ return api.sendMessage(
+ finalMsg,
+ threadID,
+ (err, info) => {
+ global.GoatBot.onReply.set(info.messageID, {
+ commandName: this.config.name,
+ author: senderID,
+ pending: pendingList
+ });
+ },
+ messageID
+ );
+ },
 
-    for (const v of input) {
-      const idx = parseInt(v);
+ onReply: async function ({ event, Reply, api }) {
+ const { author, pending } = Reply;
 
-      if (isNaN(idx) || idx <= 0 || idx > pending.length)
-        return api.sendMessage(
-          this._getText("invaildNumber", v),
-          event.threadID
-        );
+ if (String(event.senderID) !== String(author)) return;
 
-      const tID = pending[idx - 1].threadID;
+ const input = event.body.trim().toLowerCase().split(/\s+/);
+ const botID = api.getCurrentUserID();
+ const prefix = global.GoatBot?.config?.prefix || "!";
+ let count = 0;
 
-      await api.sendMessage(
-`🎉 GROUP APPROVED 
+ if (input[0] === "c" || input[0] === "cancel") {
+ for (let i = 1; i < input.length; i++) {
+ const idx = parseInt(input[i]);
+
+ if (isNaN(idx) || idx <= 0 || idx > pending.length) {
+ return api.sendMessage(
+ this._getText("invaildNumber", input[i]),
+ event.threadID
+ );
+ }
+
+ await api.removeUserFromGroup(
+ botID,
+ pending[idx - 1].threadID
+ );
+
+ count++;
+ }
+
+ return api.sendMessage(
+ this._getText("cancelSuccess", count),
+ event.threadID
+ );
+ }
+
+ for (const v of input) {
+ const idx = parseInt(v);
+
+ if (isNaN(idx) || idx <= 0 || idx > pending.length) {
+ return api.sendMessage(
+ this._getText("invaildNumber", v),
+ event.threadID
+ );
+ }
+
+ const tID = pending[idx - 1].threadID;
+
+ await api.sendMessage(
+`╭━━━━━━━━━━━━━━━━━━━━╮
+ 🎉 BOT ACTIVATED
+╰━━━━━━━━━━━━━━━━━━━━╯
 
 👋 Hello everyone!
-🤖 I am now active in this group.
 
-⚙️ Prefix: ${prefix}
-📜 Type ${prefix}help to see all commands
+🤖 I have been approved and
+ I'm now active in this group.
 
-🚀 Bot is ready to assist you!`,
-        tID
-      );
+╭─〔 ⚙️ BOT INFO 〕
+│
+│ 🔰 Prefix : ${prefix}
+│ 📜 Help : ${prefix}help
+│ 🚀 Status : ONLINE
+│
+╰────────────────────
 
-      const nickNameBot = global.GoatBot?.config?.nickNameBot;
-      if (nickNameBot)
-        await api.changeNickname(nickNameBot, tID, botID);
+💫 Thanks for adding me!
+🤖 I'm ready to assist you.
 
-      count++;
-    }
+╭━━━━━━━━━━━━━━━━━━━━╮
+ 𝐌𝐚𝐑𝐮𝐅'𝐬 𝐁𝐨𝐓 💫🪽
+╰━━━━━━━━━━━━━━━━━━━━╯`,
+ tID
+ );
 
-    return api.sendMessage(
-      this._getText("approveSuccess", count),
-      event.threadID
-    );
-  }
+ const nickNameBot = global.GoatBot?.config?.nickNameBot;
+
+ if (nickNameBot) {
+ await api.changeNickname(
+ nickNameBot,
+ tID,
+ botID
+ );
+ }
+
+ count++;
+ }
+
+ return api.sendMessage(
+ this._getText("approveSuccess", count),
+ event.threadID
+ );
+ }
 };
