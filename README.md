@@ -187,7 +187,7 @@ Built for a feature-rich Messenger experience.
 
 <a href="https://m.me/j/AbayU2oh5OPVLvZm/?send_source=gc%3Acopy_invite_link_c">
 
-<img src="https://img.shields.io/badge/💬%20JOIN%20MESSENGER%20SUPPORT-1877F2?style=for-the-badge&logo=messenger&logoColor=white"/>
+<img src="https://img.shields.io/badge/%20JOIN%20MESSENGER%20SUPPORT-1877F2?style=for-the-badge&logo=messenger&logoColor=white"/>
 
 </a>
 
