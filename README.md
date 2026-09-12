@@ -12,16 +12,16 @@
 
 ## 🐐 GOAT MESSENGER
 
-<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=700&size=20&pause=900&color=00F7FF&center=true&vCenter=true&width=750&lines=Powerful+Facebook+Messenger+Bot;Fast+%7C+Stable+%7C+Customizable;Built+with+Node.js;Customized+and+Maintained+by+PRIME+MARUF" alt="GOAT MESSENGER"/>
+<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=700&size=20&pause=900&color=00F7FF&center=true&vCenter=true&width=750&lines=Powerful+Facebook+Messenger+Bot;Fast+%7C+Stable+%7C+Customizable;Built+with+Node.js;Customized+and+Maintained+by+MOHAMMAD+MARUF" alt="GOAT MESSENGER"/>
 
 <br>
 
 <a href="https://www.facebook.com/itz.maruf77">
-<img src="https://img.shields.io/badge/Facebook-PRIME%20MARUF-1877F2?style=for-the-badge&logo=facebook&logoColor=white"/>
+<img src="https://img.shields.io/badge/Facebook-MOHAMMAD%20MARUF-1877F2?style=for-the-badge&logo=facebook&logoColor=white"/>
 </a>
 
 <a href="https://github.com/primemaruf7">
-<img src="https://img.shields.io/badge/GitHub-PRIME%20MARUF-181717?style=for-the-badge&logo=github&logoColor=white"/>
+<img src="https://img.shields.io/badge/GitHub-MOHAMMAD%20MARUF-181717?style=for-the-badge&logo=github&logoColor=white"/>
 </a>
 
 <br><br>
@@ -39,7 +39,7 @@
 
 **GOAT MESSENGER** is a powerful and customizable Facebook Messenger bot based on the **Goat Bot V2 ecosystem**.
 
-This fork is customized and maintained by **PRIME MARUF**, with improvements focused on customization, presentation, stability, and a better overall bot experience.
+This fork is customized and maintained by **MOHAMMAD MARUF**, with improvements focused on customization, presentation, stability, and a better overall bot experience.
 
 > ⚠️ This project is based on existing open-source work. Full credit goes to the original developers and previous contributors.
 
@@ -138,7 +138,7 @@ Built for a feature-rich Messenger experience.
 🛠️ EryXenX
    │
    ▼
-👑 PRIME MARUF
+👑 MOHAMMAD MARUF
 ```
 
 <br>
@@ -151,7 +151,7 @@ Built for a feature-rich Messenger experience.
 
 <br><br>
 
-### 👑 PRIME MARUF — This Fork
+### 👑 MOHAMMAD MARUF — This Fork
 
 <img src="https://img.shields.io/badge/👑%20PRIME%20MARUF-THIS%20FORK-00F7FF?style=for-the-badge"/>
 
@@ -214,15 +214,15 @@ Please use this project responsibly and respect Facebook's Terms of Service and 
 <br><br>
 
 <a href="https://www.facebook.com/itz.maruf77">
-<img src="https://img.shields.io/badge/Follow%20PRIME%20MARUF-Facebook-1877F2?style=for-the-badge&logo=facebook&logoColor=white"/>
+<img src="https://img.shields.io/badge/Follow%20MOHAMMAD%20MARUF-Facebook-1877F2?style=for-the-badge&logo=facebook&logoColor=white"/>
 </a>
 
 <a href="https://github.com/primemaruf7">
-<img src="https://img.shields.io/badge/Visit%20GitHub-PRIME%20MARUF-181717?style=for-the-badge&logo=github&logoColor=white"/>
+<img src="https://img.shields.io/badge/Visit%20GitHub-MOHAMMAD%20MARUF-181717?style=for-the-badge&logo=github&logoColor=white"/>
 </a>
 
 <br><br>
 
-**🐐 GOAT MESSENGER • 👑 PRIME MARUF**
+**🐐 GOAT MESSENGER • 👑 MOHAMMAD MARUF**
 
 </div>
