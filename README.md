@@ -21,15 +21,15 @@
 
 «A next-level Facebook Messenger bot customized, branded and maintained by PRIME MARUF.»
 
-<br>╔═════════════════════════════════╗
+<br>╔═══════════════════════════════╗
 ║                                                              ║
-║     👑  P R I M E   M A R U F                               ║
+║        👑  P R I M E   M A R U F                               ║
 ║                                                              ║
-║     🐐  G O A T   M E S S E N G E R                        ║
+║    🐐  G O A T   M E S S E N G E R                        ║
 ║                                                              ║
-║     ⚡  FAST       🧩  MODULAR       🎨  CUSTOM              ║
+║ ⚡  FAST    🧩  MODULAR    🎨  CUSTOM              ║
 ║                                                              ║
-╚════════════════════════════════════╝
+╚═══════════════════════════════════╝
 
 </div>---
 
