@@ -1,269 +1,56 @@
 const axios = require("axios");
 
-const baseApiUrl = async () => {
-	const base = await axios.get("https://raw.githubusercontent.com/mahmudx7/HINATA/main/baseApiUrl.json");
-	return base.data.mahmud;
+const mahmud = async () => {
+ const base = await axios.get("https://raw.githubusercontent.com/mahmudx7/HINATA/main/baseApiUrl.json");
+ return base.data.mahmud;
 };
 
 module.exports = {
-	config: {
-		name: "sing",
-		version: "3.7",
-		author: "MahMUD",
-		countDown: 10,
-		role: 0,
-		description: {
-			en: "Search and download any song as an audio or video file"
-		},
-		category: "music",
-		guide: {
-			en: "   {pn} <song name>: To download audio\n   {pn} -v <video name>: To download video\n   {pn} -v2 <audio/video name>: To download via ytb api\n   {pn} -v3 <audio/video name>: To download via v3 api\n   {pn} -v4 <audio/video name>: To download via v4 api"
-		}
-	},
+ config: {
+ name: "sing",
+ version: "1.7",
+ author: "MahMUD", 
+ countDown: 10,
+ role: 0,
+ category: "music",
+ guide: "{p}sing mood"
+ },
 
-	langs: {
-		en: {
-			noInput: "× Baby, please provide a song or video name.\nExample: {pn} Mood Lo-Fi, or {pn} -v Mood Lo-Fi",
-			success: "✅ | Here's your requested song baby <😘\n• 𝐒𝐨𝐧𝐠: %1",
-			videoSuccess: "✅ | Here's your requested video baby.\n• 𝐕𝐢𝐝𝐞𝐨: %1",
-			version2audio: "✅ | Here's your requested MP3 audio (v2) baby.\n• 𝐒𝐨𝐧𝐠: %1",
-			version2video: "✅ | Here's your requested video (v2) baby.\n• 𝐕𝐢𝐝𝐞𝐨: %1",
-			version3audio: "✅ | Here's your requested audio (v3) baby.\n• 𝐒𝐨𝐧𝐠: %1",
-			version3video: "✅ | Here's your requested video (v3) baby.\n• 𝐕𝐢𝐝𝐞𝐨: %1",
-			version4audio: "✅ | Here's your requested audio (v4) baby.\n• 𝐒𝐨𝐧𝐠: %1",
-			version4video: "✅ | Here's your requested video (v4) baby.\n• 𝐕𝐢𝐝𝐞𝐨: %1",
-			noResult: "⭕ No search results match the keyword",
-			error: "× API error: %1. Contact MahMUD for help.\n•WhatsApp: 01836298139"
-		}
-	},
+ onStart: async function ({ api, event, args, message }) {
+ if (args.length === 0) {
+ return message.reply("❌ | Please provide a sing name\n\nExample: sing moye moye");
+ }
 
-	onStart: async function ({ api, event, args, message, getLang, commandName }) {
-		const authorName = String.fromCharCode(77, 97, 104, 77, 85, 68);
+ try {
+ const query = encodeURIComponent(args.join(" "));
+ const apiUrl = `${await mahmud()}/api/sing?q=${query}`;
 
-		if (this.config.author !== authorName) {
-			return api.sendMessage(
-				"You are not authorized to change the author name.",
-				event.threadID,
-				event.messageID
-			);
-		}
+ const response = await axios.get(apiUrl, {
+ responseType: "stream",
+ headers: { "author": module.exports.config.author }
+ });
 
-		const { messageID } = event;
-		const flags = ["-v", "video", "-v2", "version2", "-v3", "version3", "-v4", "version4"];
+ console.log("Response:", response);
 
-		if (!flags.includes(args[0])) {
-			const search = args.join(" ");
+ if (response.data.error) {
+ return message.reply(`${response.data.error}`);
+ }
 
-			if (!search) return message.reply(getLang("noInput"));
+ message.reply({
+ body: `✅ | 𝐇𝐞𝐫𝐞'𝐬 𝐲𝐨𝐮𝐫 𝐬𝐨𝐧𝐠: ${args.join(" ")}`,
+ attachment: response.data
+ });
 
-			try {
-				api.setMessageReaction("⌛", messageID, () => {}, true);
+ } catch (error) {
+ console.error("Error:", error.message);
 
-				const downloadUrl = `${await baseApiUrl()}/api/sing?search=${encodeURIComponent(search)}&type=audio`;
-				const stream = await global.utils.getStreamFromURL(downloadUrl);
+ if (error.response) {
+ console.error("Response error data:", error.response.data);
+ console.error("Response status:", error.response.status);
+ return message.reply(`${error.response.data.error || error.message}`);
+ }
 
-				message.reply({
-					body: getLang("success", search),
-					attachment: stream
-				}, (error, info) => {
-					api.setMessageReaction("🪽", event.messageID, () => {}, true);
-				});
-			} catch (error) {
-				console.error("Sing Error:", error);
-				api.setMessageReaction("❌", messageID, () => {}, true);
-				return message.reply(getLang("error", error.message));
-			}
-		}
-
-		else if (args[0] === "-v" || args[0] === "video") {
-			args.shift();
-			const search = args.join(" ");
-
-			if (!search) return message.reply(getLang("noInput"));
-
-			try {
-				api.setMessageReaction("⌛", messageID, () => {}, true);
-
-				const downloadUrl = `${await baseApiUrl()}/api/singv4?search=${encodeURIComponent(search)}&type=video`;
-				const stream = await global.utils.getStreamFromURL(downloadUrl);
-
-				message.reply({
-					body: getLang("videoSuccess", search),
-					attachment: stream
-				}, (error, info) => {
-					api.setMessageReaction("🪽", event.messageID, () => {}, true);
-				});
-			} catch (error) {
-				console.error("Sing Video Error:", error);
-				api.setMessageReaction("❌", messageID, () => {}, true);
-				return message.reply(getLang("error", error.message));
-			}
-		}
-
-		else if (args[0] === "-v2" || args[0] === "version2") {
-			args.shift();
-			let type = "audio";
-
-			if (args.length > 0) {
-				switch (args[0]) {
-					case "-v":
-					case "video":
-						type = "video";
-						args.shift();
-						break;
-
-					case "-a":
-					case "audio":
-					case "sing":
-						type = "audio";
-						args.shift();
-						break;
-
-					default:
-						break;
-				}
-			}
-
-			const search = args.join(" ");
-
-			if (!search) return message.reply(getLang("noInput"));
-
-			try {
-				api.setMessageReaction("⌛", messageID, () => {}, true);
-
-				const searchRes = await axios.get(
-					`${await baseApiUrl()}/api/ytb/search?q=${encodeURIComponent(search)}`
-				);
-
-				const results = searchRes.data.results;
-
-				if (!results || results.length === 0) {
-					return message.reply(
-						getLang("error", type === "video" ? "No video found!" : "No audio found!")
-					);
-				}
-
-				const videoID = results[0].id;
-				const realTitle = results[0].title;
-
-				const getRes = await axios.get(
-					`${await baseApiUrl()}/api/ytb/get?id=${videoID}&type=${type}`
-				);
-
-				const { downloadLink } = getRes.data.data;
-				const stream = await global.utils.getStreamFromURL(downloadLink);
-
-				message.reply({
-					body: type === "video"
-						? getLang("version2video", realTitle)
-						: getLang("version2audio", realTitle),
-					attachment: stream
-				}, (error, info) => {
-					api.setMessageReaction("🪽", event.messageID, () => {}, true);
-				});
-			} catch (error) {
-				console.error("Sing Audio V2 Error:", error);
-				api.setMessageReaction("❌", messageID, () => {}, true);
-				return message.reply(getLang("error", error.message));
-			}
-		}
-
-		else if (args[0] === "-v3" || args[0] === "version3") {
-			args.shift();
-			let type = "audio";
-
-			if (args.length > 0) {
-				switch (args[0]) {
-					case "-v":
-					case "video":
-						type = "video";
-						args.shift();
-						break;
-
-					case "-a":
-					case "audio":
-					case "sing":
-						type = "audio";
-						args.shift();
-						break;
-
-					default:
-						break;
-				}
-			}
-
-			const search = args.join(" ");
-
-			if (!search) return message.reply(getLang("noInput"));
-
-			try {
-				api.setMessageReaction("⌛", messageID, () => {}, true);
-
-				const downloadUrl = `${await baseApiUrl()}/api/singv3?search=${encodeURIComponent(search)}${type === "video" ? "&type=video" : ""}`;
-				const stream = await global.utils.getStreamFromURL(downloadUrl);
-
-				message.reply({
-					body: type === "video"
-						? getLang("version3video", search)
-						: getLang("version3audio", search),
-					attachment: stream
-				}, (error, info) => {
-					api.setMessageReaction("🪽", event.messageID, () => {}, true);
-				});
-			} catch (error) {
-				console.error("Sing V3 Error:", error);
-				api.setMessageReaction("❌", messageID, () => {}, true);
-				return message.reply(getLang("error", error.message));
-			}
-		}
-
-		else if (args[0] === "-v4" || (args.length > 0 && args[0] === "version4")) {
-			args.shift();
-			let type = "audio";
-
-			if (args.length > 0) {
-				switch (args[0]) {
-					case "-v":
-					case "video":
-						type = "video";
-						args.shift();
-						break;
-
-					case "-a":
-					case "audio":
-					case "sing":
-						type = "audio";
-						args.shift();
-						break;
-
-					default:
-						break;
-				}
-			}
-
-			const search = args.join(" ");
-
-			if (!search) return message.reply(getLang("noInput"));
-
-			try {
-				api.setMessageReaction("⌛", messageID, () => {}, true);
-
-				const downloadUrl = `${await baseApiUrl()}/api/singv4?search=${encodeURIComponent(search)}${type === "video" ? "&type=video" : ""}`;
-				const stream = await global.utils.getStreamFromURL(downloadUrl);
-
-				message.reply({
-					body: type === "video"
-						? getLang("version4video", search)
-						: getLang("version4audio", search),
-					attachment: stream
-				}, (error, info) => {
-					api.setMessageReaction("🪽", event.messageID, () => {}, true);
-				});
-			} catch (error) {
-				console.error("Sing V4 Error:", error);
-				api.setMessageReaction("❌", messageID, () => {}, true);
-				return message.reply(getLang("error", error.message));
-			}
-		}
-	}
+ message.reply("error🥺");
+ }
+ }
 };
