@@ -4,9 +4,7 @@
 
 <a href="https://github.com/maruf-1718/MARUFS-BOT">
 <img src="https://img.shields.io/badge/%F0%9F%90%90%20GOAT%20MESSENGER-V2.0.0-00F7FF?style=for-the-badge&logo=github&logoColor=black"/>
-</a>
-&nbsp;
-<a href="https://www.facebook.com/itz.maruf77">
+</a><a href="https://www.facebook.com/itz.maruf77">
 <img src="https://img.shields.io/badge/%F0%9F%91%91%20PRIME%20MARUF-FACEBOOK-1877F2?style=for-the-badge&logo=facebook&logoColor=white"/>
 </a><br><br>
 
@@ -25,14 +23,21 @@ A next-level Facebook Messenger bot customized, branded and maintained by PRIME 
 
 <br><table>
 <tr>
-<td align="center">👑 PRIME MARUF
+<td align="center">👑 <b>PRIME MARUF</b>
 
-GOAT MESSENGER
+<br>🐐 <b>GOAT MESSENGER</b>
 
-</td>
-</tr>
-<tr>
-<td align="center">⚡ FAST   •   🧩 MODULAR   •   🎨 CUSTOM
+<br><br>
+
+⚡ <b>FAST</b>
+  •  
+🧩 <b>MODULAR</b>
+  •  
+🎨 <b>CUSTOM</b>
+
+<br><br>
+
+🔥 <b>BUILT DIFFERENT</b>
 
 </td>
 </tr>
@@ -58,19 +63,27 @@ This version has been customized by PRIME MARUF with a strong focus on:
 💎 02 — WHY GOAT?
 
 <table>
-<tr><td align="center" width="25%">⚡ SPEED
+<tr><td align="center" width="25%"><h2>⚡</h2><b>SPEED</b>
+
+<br><br>
 
 Fast command execution and responsive bot interaction.
 
-</td><td align="center" width="25%">🧩 MODULAR
+</td><td align="center" width="25%"><h2>🧩</h2><b>MODULAR</b>
+
+<br><br>
 
 Commands and events are separated for easier development.
 
-</td><td align="center" width="25%">🎨 CUSTOM
+</td><td align="center" width="25%"><h2>🎨</h2><b>CUSTOM</b>
+
+<br><br>
 
 Prefix, responses, commands and behavior can be customized.
 
-</td><td align="center" width="25%">👑 UNIQUE
+</td><td align="center" width="25%"><h2>👑</h2><b>UNIQUE</b>
+
+<br><br>
 
 Customized and branded for the PRIME MARUF experience.
 
@@ -90,37 +103,69 @@ Customized and branded for the PRIME MARUF experience.
 
 🧠 04 — CORE SYSTEM
 
-<div align="center">                    🐐 GOAT MESSENGER
-                           │
-          ┌────────────────┼────────────────┐
-          │                │                │
-          ▼                ▼                ▼
-     🤖 COMMANDS       📡 EVENTS        ⚙️ CONFIG
-          │                │                │
-          ▼                ▼                ▼
-    User Commands      Event System      Bot Settings
-          │                │                │
-          └────────────────┼────────────────┘
-                           │
-                           ▼
-                  ⚡ MESSENGER RESPONSE
+<div align="center"><table>
+<tr>
+<td colspan="3" align="center"><h2>🐐 GOAT MESSENGER</h2></td>
+</tr><tr>
+<td align="center" width="33%"><h3>🤖 COMMANDS</h3>User Commands
 
-</div>---
+</td><td align="center" width="33%"><h3>📡 EVENTS</h3>Event System
+
+</td><td align="center" width="33%"><h3>⚙️ CONFIG</h3>Bot Settings
+
+</td>
+</tr><tr>
+<td colspan="3" align="center"><br>⬇️              ⬇️              ⬇️
+
+<br><br>
+
+</td>
+</tr><tr>
+<td colspan="3" align="center"><h3>⚡ MESSENGER RESPONSE</h3></td>
+</tr>
+</table></div>---
 
 🧬 05 — FORK LINEAGE
 
-<div align="center">🛠️ ERYXENX
-     │
-     ▼
-🐐 GOAT MESSENGER
-     │
-     ▼
-👑 PRIME MARUF
-     │
-     ▼
-🔥 CUSTOMIZED FORK
+<div align="center"><table>
+<tr>
+<td align="center">🛠️
 
-<br><a href="https://github.com/EryXenX/GOAT-MESSENGER">
+<br><b>ERYXENX</b>
+
+</td>
+</tr><tr>
+<td align="center">⬇️
+
+</td>
+</tr><tr>
+<td align="center">🐐
+
+<br><b>GOAT MESSENGER</b>
+
+</td>
+</tr><tr>
+<td align="center">⬇️
+
+</td>
+</tr><tr>
+<td align="center">👑
+
+<br><b>PRIME MARUF</b>
+
+</td>
+</tr><tr>
+<td align="center">⬇️
+
+</td>
+</tr><tr>
+<td align="center">🔥
+
+<br><b>CUSTOMIZED FORK</b>
+
+</td>
+</tr>
+</table><br><a href="https://github.com/EryXenX/GOAT-MESSENGER">
 <img src="https://img.shields.io/badge/%F0%9F%9B%A0%EF%B8%8F%20ERYXENX-ORIGINAL%20FORK-181717?style=for-the-badge&logo=github&logoColor=white"/>
 </a>  
 
@@ -144,19 +189,19 @@ TECHNOLOGY| USAGE
 
 🚀 07 — QUICK START
 
-01 • Clone Repository
+01 — Clone Repository
 
 git clone https://github.com/maruf-1718/MARUFS-BOT
 
-02 • Enter Directory
+02 — Enter Directory
 
 cd MARUFS-BOT
 
-03 • Install Dependencies
+03 — Install Dependencies
 
 npm install
 
-04 • Configure
+04 — Configure
 
 Edit:
 
@@ -164,15 +209,21 @@ config.json
 
 Configure the required bot settings according to your setup.
 
-05 • Launch
+05 — Launch
 
 npm start
 
-<div align="center">⚡ GOAT MESSENGER IS STARTING...
+<div align="center"><br><table>
+<tr>
+<td align="center">⚡ <b>GOAT MESSENGER IS STARTING...</b>
 
-👑 PRIME MARUF
+<br><br>
 
-</div>---
+👑 <b>PRIME MARUF</b>
+
+</td>
+</tr>
+</table></div>---
 
 📂 08 — PROJECT STRUCTURE
 
@@ -196,39 +247,35 @@ MARUFS-BOT/
 ├── 🚀 index.js
 └── 📖 README.md
 
-«ℹ️ Note: Keep this section synchronized with the actual files and folders in your repository.»
+«ℹ️ Note: The structure above is a visual example. Keep it synchronized with the actual files and folders in your repository.»
 
 ---
 
 🎯 09 — CUSTOMIZATION
 
-Want to make the bot yours?
+<div align="center"><table>
+<tr><td align="center">🎯<br>
+<b>CUSTOM PREFIX</b>
 
-<table>
-<tr>
-<td align="center">🎯 CUSTOM PREFIX
+</td><td align="center">⚡<br>
+<b>CUSTOM COMMANDS</b>
 
-</td>
-<td align="center">⚡ CUSTOM COMMANDS
+</td><td align="center">🎨<br>
+<b>CUSTOM RESPONSES</b>
 
-</td>
-<td align="center">🎨 CUSTOM RESPONSES
+</td></tr><tr><td align="center">🧩<br>
+<b>CUSTOM EVENTS</b>
 
-</td>
-</tr><tr>
-<td align="center">🧩 CUSTOM EVENTS
+</td><td align="center">⚙️<br>
+<b>CUSTOM CONFIGURATION</b>
 
-</td>
-<td align="center">⚙️ CUSTOM CONFIG
+</td><td align="center">👑<br>
+<b>CUSTOM BRANDING</b>
 
-</td>
-<td align="center">👑 CUSTOM BRANDING
+</td></tr>
+</table><br>The modular structure makes it easier to extend the bot with your own commands and functionality.
 
-</td>
-</tr>
-</table>The modular structure makes it easier to extend the bot with your own commands and functionality.
-
----
+</div>---
 
 💬 10 — MESSENGER SUPPORT
 
@@ -236,20 +283,38 @@ Want to make the bot yours?
 
 <a href="https://m.me/j/AbayU2oh5OPVLvZm/?send_source=gc%3Acopy_invite_link_c">
 <img src="https://img.shields.io/badge/%F0%9F%92%AC%20JOIN%20MESSENGER%20SUPPORT-1877F2?style=for-the-badge&logo=messenger&logoColor=white"/>
-</a></div>---
+</a><br><br>
+
+<b>COMMUNITY • SUPPORT • UPDATES</b>
+
+</div>---
 
 🧑‍💻 11 — DEVELOPMENT
 
-<div align="center">| 
-🐛| Report Bugs
-💡| Suggest Features
-🔧| Submit Improvements
-⚡| Build New Commands
-⭐| Star the Repository
-🍴| Fork the Project
-📢| Share the Project
-
-<br>Every contribution helps make GOAT MESSENGER better.
+<div align="center"><table>
+<tr>
+<td align="center">🐛</td>
+<td><b>Report Bugs</b></td>
+</tr><tr>
+<td align="center">💡</td>
+<td><b>Suggest Features</b></td>
+</tr><tr>
+<td align="center">🔧</td>
+<td><b>Submit Improvements</b></td>
+</tr><tr>
+<td align="center">⚡</td>
+<td><b>Build New Commands</b></td>
+</tr><tr>
+<td align="center">⭐</td>
+<td><b>Star the Repository</b></td>
+</tr><tr>
+<td align="center">🍴</td>
+<td><b>Fork the Project</b></td>
+</tr><tr>
+<td align="center">📢</td>
+<td><b>Share the Project</b></td>
+</tr>
+</table><br><b>Every contribution helps make GOAT MESSENGER better.</b>
 
 </div>---
 
@@ -261,7 +326,7 @@ Show your support by starring or forking the repository.
 
 <br><a href="https://github.com/maruf-1718/MARUFS-BOT">
 <img src="https://img.shields.io/badge/%E2%AD%90%20STAR%20REPOSITORY-00F7FF?style=for-the-badge&logo=github&logoColor=black"/>
-</a> 
+</a>  
 
 <a href="https://github.com/maruf-1718/MARUFS-BOT/fork">
 <img src="https://img.shields.io/badge/%F0%9F%8D%B4%20FORK%20PROJECT-181717?style=for-the-badge&logo=github&logoColor=white"/>
@@ -281,17 +346,15 @@ Please use this project responsibly and respect Facebook's Terms of Service, app
 
 <div align="center"><img src="https://readme-typing-svg.demolab.com?font=Orbitron&weight=900&size=23&duration=2200&pause=800&color=00F7FF&center=true&vCenter=true&width=700&lines=ORIGINAL+DEVELOPERS+%26+CONTRIBUTORS;%E2%9C%A8+THANKS+FOR+THE+FOUNDATION" alt="Credits"/><br><br>
 
-🛠️ EryXenX
-
-<a href="https://github.com/EryXenX/GOAT-MESSENGER">
+<h3>🛠️ EryXenX</h3><a href="https://github.com/EryXenX/GOAT-MESSENGER">
 <img src="https://img.shields.io/badge/ERYXENX-GOAT%20MESSENGER-181717?style=for-the-badge&logo=github&logoColor=white"/>
 </a><br><br>
 
-👑 Customized & Maintained By
+<h3>👑 Customized & Maintained By</h3><img src="https://img.shields.io/badge/PRIME%20MARUF-%F0%9F%90%90%20GOAT%20MESSENGER-00F7FF?style=for-the-badge"/></div>---
 
-<img src="https://img.shields.io/badge/PRIME%20MARUF-%F0%9F%90%90%20GOAT%20MESSENGER-00F7FF?style=for-the-badge"/></div>---
+<div align="center"><br><br>
 
-<div align="center"><br><img src="https://readme-typing-svg.demolab.com?font=Orbitron&weight=900&size=27&duration=2400&pause=900&color=00F7FF&center=true&vCenter=true&width=850&lines=%F0%9F%91%8B+THANKS+FOR+VISITING;%F0%9F%94%A5+KEEP+BUILDING;%F0%9F%92%BB+KEEP+CODING;%F0%9F%91%91+STAY+GOAT" alt="Footer"/><br><br>
+<img src="https://readme-typing-svg.demolab.com?font=Orbitron&weight=900&size=27&duration=2400&pause=900&color=00F7FF&center=true&vCenter=true&width=850&lines=%F0%9F%91%8B+THANKS+FOR+VISITING;%F0%9F%94%A5+KEEP+BUILDING;%F0%9F%92%BB+KEEP+CODING;%F0%9F%91%91+STAY+GOAT" alt="Footer"/><br><br>
 
 <a href="https://www.facebook.com/itz.maruf77">
 <img src="https://img.shields.io/badge/%F0%9F%91%91%20FOLLOW%20PRIME%20MARUF-FACEBOOK-1877F2?style=for-the-badge&logo=facebook&logoColor=white"/>
@@ -301,8 +364,16 @@ Please use this project responsibly and respect Facebook's Terms of Service, app
 <img src="https://img.shields.io/badge/%F0%9F%90%90%20GOAT%20MESSENGER-PRIME%20MARUF-00F7FF?style=for-the-badge&logo=github&logoColor=black"/>
 </a><br><br>
 
-🐐 GOAT MESSENGER • 👑 PRIME MARUF
+<table>
+<tr>
+<td align="center">🐐 <b>GOAT MESSENGER</b>
+<br>
+👑 <b>PRIME MARUF</b>
+<br><br>
+⚡ <b>BUILT DIFFERENT</b>
 
-© 2026 PRIME MARUF
+</td>
+</tr>
+</table><br><b>© 2026 PRIME MARUF • GOAT MESSENGER</b>
 
 </div>
