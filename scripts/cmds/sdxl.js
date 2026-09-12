@@ -1,61 +1,79 @@
 const axios = require("axios");
 const fs = require("fs-extra");
+const path = require("path");
 
 module.exports = {
-  config: {
-    name: "sdxl",
-    aliases: [],
-    version: "1.0",
-    author: "nexo_here",
-    countDown: 10,
-    role: 0,
-    shortDescription: "Generate image with SDXL Light",
-    longDescription: "Generate AI image using SDXL Light API with various styles",
-    category: "AI-IMAGE",
-    guide: {
-      en: "{pn} <prompt> | <style>\n\nAvailable styles:\n- 3D Model\n- Analog Film\n- Anime\n- Cinematic\n- Comic Book"
-    }
-  },
+ config: {
+ name: "sdxl",
+ aliases: ["imagine", "gen"],
+ version: "2.0",
+ author: "𝐌𝐚𝐑𝐮𝐅",
+ countDown: 10,
+ role: 0,
+ shortDescription: "Generate image with SDXL",
+ longDescription: "Generate AI image with styles",
+ category: "image",
+ guide: {
+ en: "{pn} <prompt> | <style>\nStyles: 3D, Anime, Cinematic, Comic, Fantasy, Realistic\nEx: {pn} a cat warrior | Anime"
+ }
+ },
 
-  onStart: async function ({ api, event, args }) {
-    const input = args.join(" ").split("|");
-    const prompt = input[0]?.trim();
-    const style = input[1]?.trim();
+ onStart: async function ({ api, event, args }) {
+ const threadID = event.threadID;
+ const messageID = event.messageID;
 
-    if (!prompt || !style) {
-      return api.sendMessage("❌ | Please provide both prompt and style.\nExample:\n.sdxllight a dragon flying over a city | Anime", event.threadID, event.messageID);
-    }
+ let input = args.join(" ").split("|");
+ let prompt = input[0]?.trim();
+ let style = input[1]?.trim()?.toLowerCase() || "realistic";
 
-    const validStyles = ["3D Model", "Analog Film", "Anime", "Cinematic", "Comic Book"];
-    if (!validStyles.includes(style)) {
-      return api.sendMessage("❌ | Invalid style provided. Available styles:\n- " + validStyles.join("\n- "), event.threadID, event.messageID);
-    }
+ if (!prompt) return api.sendMessage(
+ "❌ Prompt দাও\n\n📌 Use:\nsdxl a dragon flying | Anime\nsdxl cat in space | Cinematic\n\nStyles: 3D, Anime, Cinematic, Comic, Fantasy, Realistic",
+ threadID, messageID
+ );
 
-    const msg = await api.sendMessage("⏳ | Generating image...", event.threadID);
+ // style prompt enhance
+ const styleMap = {
+ "3d": "3d render, highly detailed, pixar style, ",
+ "anime": "anime style, studio ghibli, detailed anime art, ",
+ "cinematic": "cinematic lighting, epic, 8k, movie poster, ",
+ "comic": "comic book style, bold lines, vibrant, ",
+ "fantasy": "fantasy art, magical, detailed, ",
+ "realistic": "ultra realistic, 8k, highly detailed, photorealistic, "
+ };
 
-    try {
-      const response = await axios({
-        method: "GET",
-        url: "https://www.arch2devs.ct.ws/api/sdxl-light",
-        params: {
-          prompt: prompt,
-          style: style,
-          model: "sdxl"
-        },
-        responseType: "arraybuffer"
-      });
+ const stylePrompt = styleMap[style] || styleMap["realistic"] + style + ", ";
+ const finalPrompt = encodeURIComponent(stylePrompt + prompt);
 
-      const path = __dirname + `/cache/sdxllight_${event.senderID}.png`;
-      fs.writeFileSync(path, Buffer.from(response.data, "binary"));
+ const loading = await api.sendMessage(`⏳ Generating...\n🎨 Prompt: ${prompt}\n✨ Style: ${style}`, threadID);
 
-      api.sendMessage({
-        body: `✅ | Here's your image:\nPrompt: ${prompt}\nStyle: ${style}`,
-        attachment: fs.createReadStream(path)
-      }, event.threadID, () => fs.unlinkSync(path), msg.messageID);
+ try {
+ const cachePath = path.join(__dirname, "cache");
+ if (!fs.existsSync(cachePath)) fs.mkdirSync(cachePath, { recursive: true });
 
-    } catch (error) {
-      console.error(error);
-      api.sendMessage("❌ | Failed to generate image. Please try again later.", event.threadID, msg.messageID);
-    }
-  }
+ const filePath = path.join(cachePath, `sdxl_${Date.now()}.jpg`);
+
+ // Working SDXL API - Pollinations
+ const imageUrl = `https://image.pollinations.ai/prompt/${finalPrompt}?width=1024&height=1024&model=flux&nologo=true&enhance=true`;
+
+ const res = await axios.get(imageUrl, { responseType: "arraybuffer", timeout: 60000 });
+ fs.writeFileSync(filePath, res.data);
+
+ return api.sendMessage(
+ {
+ body: `✅ Done!\n\n📝 Prompt: ${prompt}\n🎨 Style: ${style}`,
+ attachment: fs.createReadStream(filePath)
+ },
+ threadID,
+ () => {
+ if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+ api.unsendMessage(loading.messageID);
+ },
+ messageID
+ );
+
+ } catch (e) {
+ console.log(e.message);
+ return api.sendMessage("❌ Image generate failed, আবার চেষ্টা করো।", threadID, messageID);
+ }
+ }
 };
