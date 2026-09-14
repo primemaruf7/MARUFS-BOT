@@ -6,22 +6,24 @@ const getMainAPI = async () => {
   return (await axios.get(apiList)).data.simsimi;
 };
 
-module.exports.config = {
+exports.config = {
   name: "baby",
   version: "1.0.3",
-  hasPermssion: 0,
-  credits: "𝐌𝐚𝐑𝐮𝐅",
-  description: "Cute AI Baby Chatbot | Talk, Teach & Chat with Emotion 🌸😊",
-  commandCategory: "Chat",
-  usages: "[message/query]",
-  cooldowns: 0,
-  prefix: true
+  author: "𝐌𝐚𝐑𝐮𝐅",
+  countDown: 0,
+  role: 0,
+  shortDescription: "Cute AI Baby Chatbot",
+  longDescription: "Cute AI Baby Chatbot | Talk, Teach & Chat with Emotion 🌸😊",
+  category: "Chat",
+  guide: {
+    en: "{pn} [message/query]"
+  }
 };
 
-module.exports.run = async function ({ api, event, args, Users }) {
+exports.onStart = async function ({ api, event, args, users }) {
   try {
     const uid = event.senderID;
-    const senderName = await Users.getNameUser(uid);
+    const senderName = await users.getName(uid);
     const rawQuery = args.join(" ");
     const query = rawQuery.toLowerCase();
     const simsim = await getMainAPI();
@@ -31,10 +33,9 @@ module.exports.run = async function ({ api, event, args, Users }) {
       const r = ran[Math.floor(Math.random() * ran.length)];
 
       return api.sendMessage(r, event.threadID, (err, info) => {
-        if (!err) {
-          global.client.handleReply.push({
-            name: module.exports.config.name,
-            messageID: info.messageID,
+        if (!err && info) {
+          global.GoatBot.onReply.set(info.messageID, {
+            commandName: exports.config.name,
             author: event.senderID,
             type: "simsimi"
           });
@@ -79,13 +80,13 @@ module.exports.run = async function ({ api, event, args, Users }) {
           event.threadID,
           event.messageID
         );
-      } else {
-        return api.sendMessage(
-          `Error: ${res.data.message}`,
-          event.threadID,
-          event.messageID
-        );
       }
+
+      return api.sendMessage(
+        `Error: ${res.data.message}`,
+        event.threadID,
+        event.messageID
+      );
     }
 
     if (command === "edit") {
@@ -176,10 +177,9 @@ module.exports.run = async function ({ api, event, args, Users }) {
           rep,
           event.threadID,
           (err, info) => {
-            if (!err) {
-              global.client.handleReply.push({
-                name: module.exports.config.name,
-                messageID: info.messageID,
+            if (!err && info) {
+              global.GoatBot.onReply.set(info.messageID, {
+                commandName: exports.config.name,
                 author: event.senderID,
                 type: "simsimi"
               });
@@ -200,14 +200,9 @@ module.exports.run = async function ({ api, event, args, Users }) {
   }
 };
 
-module.exports.handleReply = async function ({
-  api,
-  event,
-  Users,
-  handleReply
-}) {
+exports.onReply = async function ({ api, event, Reply, users }) {
   try {
-    const senderName = await Users.getNameUser(event.senderID);
+    const senderName = await users.getName(event.senderID);
     const replyText = event.body ? event.body.toLowerCase() : "";
 
     if (!replyText) return;
@@ -228,10 +223,9 @@ module.exports.handleReply = async function ({
           rep,
           event.threadID,
           (err, info) => {
-            if (!err) {
-              global.client.handleReply.push({
-                name: module.exports.config.name,
-                messageID: info.messageID,
+            if (!err && info) {
+              global.GoatBot.onReply.set(info.messageID, {
+                commandName: exports.config.name,
                 author: event.senderID,
                 type: "simsimi"
               });
@@ -252,11 +246,7 @@ module.exports.handleReply = async function ({
   }
 };
 
-module.exports.handleEvent = async function ({
-  api,
-  event,
-  Users
-}) {
+exports.onChat = async function ({ api, event, users }) {
   try {
     const raw = event.body
       ? event.body.toLowerCase().trim()
@@ -264,7 +254,7 @@ module.exports.handleEvent = async function ({
 
     if (!raw) return;
 
-    const senderName = await Users.getNameUser(event.senderID);
+    const senderName = await users.getName(event.senderID);
     const senderID = event.senderID;
 
     const simsim = await getMainAPI();
@@ -287,9 +277,7 @@ module.exports.handleEvent = async function ({
       "আমাকে না ডেকে মারুফ কে প্রপোজ কর 😘🌸",
       "বার বার Disturb করছিস কোনো😾,আমার জানুর সাথে ব্যাস্ত আছি😋",
       "আরে বলদ এতো ডাকিস কেন🤬",
-      "আমাকে ডাকলে ,আমি কিন্তু কিস করে দিবো😘",
       "আমারে এতো ডাকিস না আমি মজা করার mood এ নাই এখন😒",
-      "হ্যাঁ জানু , এইদিক এ আসো কিস দেই🤭 😘",
       "দূরে যা, তোর কোনো কাজ নাই, শুধু bot bot করিস 😉😋🤣",
       "তোর কথা তোর বাড়ি কেউ শুনে না ,তো আমি কোনো শুনবো ?🤔😂",
       "আমাকে ডেকো না,আমি ইশরাতের সাথে ব্যাস্ত আছি",
@@ -310,33 +298,27 @@ module.exports.handleEvent = async function ({
       "jang hanga korba😒😬",
       "হুম জান তোমার অইখানে উম্মমাহ😷😘",
       "আসসালামু আলাইকুম বলেন আপনার জন্য কি করতে পারি..!🥰",
-      "ভালোবাসার নামক আবলামি করতে চাইলে মারুফের ইনবক্সে গুতা দিন ~🙊😘🤣 𝐅𝐚𝐜𝐞𝐛𝐨𝐨𝐤 𝐋𝐢𝐧𝐤 : https://www.facebook.com/profile.php?id=61594013413183",
       "আমাকে এতো না ডেকে মারুফ কে একটা GF দে'হহহ 🙄",
       "আমাকে এতো না ডেকছ কেন ভলো টালো বাসো নাকি🤭🙈",
       "🌻🌺💚-আসসালামু আলাইকুম ওয়া রাহমাতুল্লাহ-💚🌺🌻",
       "আমি এখন বস মারুফ এর সাথে বিজি আছি আমাকে ডাকবেন না-😕😏 ধন্যবাদ-🤝🌻",
       "আমাকে না ডেকে আমার বস মারুফ কে একটা জি এফ দাও-😽🫶🌺",
-      "ঝাং থুমালে আইলাপিউ পেপি-💝😽",
       "উফফ বুঝলাম না এতো ডাকছেন কেনো-😤😡😈",
       "জান তোমার বান্ধবী রে আমার বস মারুফের হাতে তুলে দিবা-🙊🙆‍♂",
       "আজকে আমার মন ভালো নেই তাই আমারে ডাকবেন না-😪🤧",
-      "ঝাং 🫵থুমালে য়ামি রাইতে পালুপাসি উম্মম্মাহ-🌺🤤💦",
       "চুনা ও চুনা আমার বস মারুফ এর হবু বউ রে কেও দেকছো খুজে পাচ্ছি না😪🤧😭",
       "স্বপ্ন তোমারে নিয়ে দেখতে চাই তুমি যদি আমার হয়ে থেকে যাও-💝🌺🌻",
       "জান হাঙ্গা করবা-🙊😝🌻",
       "জান মেয়ে হলে চিপায় আসো বস মারুফের থেকে অনেক ভালোবাসা শিখছি তোমার জন্য-🙊🙈😽",
       "ইসস এতো ডাকো কেনো লজ্জা লাগে তো-🙈🖤🌼",
       "আমার বস মারুফের পক্ষ থেকে তোমারে এতো এতো ভালোবাসা-🥰😽🫶 আমার বস মারুফ এর জন্য দোয়া করবেন-💝💚🌺🌻",
-      "- ভালোবাসা নামক আব্লামি করতে মন চাইলে আমার বস মারুফ এর ইনবক্স চলে যাও-🙊🥱👅 🌻𝐅𝐀𝐂𝐄𝐁𝐎𝐎𝐊 𝐈𝐃 𝐋𝐈𝐍𝐊 🌻:- https://www.facebook.com/profile.php?id=61594013413183",
       "আমার জান তুমি শুধু আমার আমি তোমারে ৩৬৫ দিন ভালোবাসি-💝🌺😽",
       "কিরে প্রেম করবি তাহলে মারুফের ইনবক্সে গুতা দে 😘🤌 𝐅𝐚𝐜𝐞𝐛𝐨𝐨𝐤 𝐋𝐢𝐧𝐤 : https://www.facebook.com/profile.php?id=61594013413183",
       "জান আমার বস মারুফ কে বিয়ে করবা-🙊😘🥳",
-      "-আন্টি-🙆-আপনার মেয়ে-👰‍♀️-রাতে আমারে ভিদু কল দিতে বলে🫣-🥵🤤💦",
       "oii-🥺🥹-এক🥄 চামচ ভালোবাসা দিবা-🤏🏻🙂",
       "-আপনার সুন্দরী বান্ধুবীকে ফিতরা হিসেবে আমার বস মারুফ কে দান করেন-🥱🐰🍒",
       "-ও মিম ও মিম-😇-তুমি কেন চুরি করলা সাদিয়ার ফর্সা হওয়ার ক্রীম-🌚🤧",
       "-অনুমতি দিলাম-𝙋𝙧𝙤𝙥𝙤𝙨𝙚 কর মারুফ কে-🐸😾🔪",
-      "-𝙂𝙖𝙮𝙚𝙨-🤗-যৌবনের কসম দিয়ে আমারে 𝐁𝐥𝐚𝐜𝐤𝐦𝐚𝐢𝐥 করা হচ্ছে-🥲🤦‍♂️🤧",
       "-𝗢𝗶𝗶 আন্টি-🙆‍♂️-তোমার মেয়ে চোখ মারে-🥺🥴🐸",
       "তাকাই আছো কেন চুমু দিবা-🙄🐸😘",
       "আজকে প্রপোজ করে দেখো রাজি হইয়া যামু-😌🤗😇",
@@ -347,7 +329,6 @@ module.exports.handleEvent = async function ({
       "-ছোটবেলা ভাবতাম বিয়ে করলে অটোমেটিক বাচ্চা হয়-🥱-ওমা এখন দেখি কাহিনী অন্যরকম-😦🙂🌻",
       "প্রেম করতে চাইলে মারুফের ইনবক্সে চলে যা 😏🐸 𝐅𝐚𝐜𝐞𝐛𝐨𝐨𝐤 𝐋𝐢𝐧𝐤 : https://www.facebook.com/profile.php?id=61594013413183",
       "-আজ একটা বিন নেই বলে ফেসবুকের নাগিন-🤧-গুলোরে আমার বস মারুফ ধরতে পারছে না-🐸🥲",
-      "-চুমু থাকতে তোরা বিড়ি খাস কেন বুঝা আমারে-😑😒🐸⚒️",
       "—যে ছেড়ে গেছে-😔-তাকে ভুলে যাও-🙂-মারুফের সাথে প্রেম করে তাকে দেখিয়ে দাও-🙈🐸🤗",
       "—হাজারো লুচ্চা লুচ্চির ভিরে-🙊🥵আমার বস মারুফ এক নিস্পাপ ভালো মানুষ-🥱🤗🙆‍♂️",
       "-রূপের অহংকার করো না-🙂❤️চকচকে সূর্যটাও দিনশেষে অন্ধকারে পরিণত হয়-🤗💜",
@@ -357,13 +338,7 @@ module.exports.handleEvent = async function ({
       "ভালোবাসার নামক আবলামি করতে চাইলে মারুফের ইনবক্সে গুতা দিন🤣😼",
       "মেয়ে হলে মারুফের ইনবক্সে চলে যা 🤭🤣😼 𝐅𝐚𝐜𝐞𝐛𝐨𝐨𝐤 𝐋𝐢𝐧𝐤 : https://www.facebook.com/profile.php?id=61594013413183",
       "হুদাই আমারে শয়তানে লারে-😝😑☹️",
-      "-𝗜 𝗟𝗢𝗩𝗘 𝗬𝗢𝗨-😽-আহারে ভাবছো তোমারে প্রোপজ করছি-🥴-থাপ্পর দিয়া কিডনী লক করে দিব-😒-ভুল পড়া বের করে দিবো-🤭🐸",
-      "-আমি একটা দুধের শিশু-😇-🫵𝗬𝗢𝗨🐸💦",
-      "-কতদিন হয়ে গেলো বিছনায় মুতি না-😿-মিস ইউ নেংটা কাল-🥺🤧",
-      "-বালিকা━👸-𝐃𝐨 𝐲𝐨𝐮-🫵-বিয়া-𝐦𝐞-😽-আমি তোমাকে-😻-আম্মু হইতে সাহায্য করব-🙈🥱",
-      "-এই আন্টির মেয়ে-🫢🙈-𝐔𝐦𝐦𝐦𝐦𝐦𝐦𝐦𝐦𝐦𝐦𝐦𝐡-😽🫶-আসলেই তো স্বাদ-🥵💦-এতো স্বাদ কেন-🤔-সেই স্বাদ-😋",
       "-ইস কেউ যদি বলতো-🙂-আমার শুধু তোমাকেই লাগবে-💜🌸",
-      "-ওই বেডি তোমার বাসায় না আমার বস মারুফ মেয়ে দেখতে গেছিলো-🙃-নাস্তা আনারস আর দুধ দিছো-🙄🤦‍♂️-বইন কইলেই তো হয় বয়ফ্রেন্ড আছে-🥺🤦‍♂-আমার বস মারুফ কে জানে মারার কি দরকার-🙄🤧",
       "-একদিন সে ঠিকই ফিরে তাকাবে-😇-আর মুচকি হেসে বলবে ওর মতো আর কেউ ভালবাসেনি-🙂😅",
       "-হুদাই গ্রুপে আছি-🥺🐸-কেও ইনবক্সে নক দিয়ে বলে না জান তোমারে আমি অনেক ভালোবাসি-🥺🤧",
       "কি'রে গ্রুপে দেখি একটাও বেডি নাই-🤦‍🥱💦",
@@ -379,8 +354,8 @@ module.exports.handleEvent = async function ({
       raw === "jan" ||
       raw === "xan" ||
       raw === "জান" ||
-      raw === "maruf" ||
-      raw === "মারুফ"
+      raw === "বট" ||
+      raw === "বেবি"
     ) {
       const randomReply =
         greetings[Math.floor(Math.random() * greetings.length)];
@@ -389,10 +364,9 @@ module.exports.handleEvent = async function ({
         randomReply,
         event.threadID,
         (err, info) => {
-          if (!err) {
-            global.client.handleReply.push({
-              name: module.exports.config.name,
-              messageID: info.messageID,
+          if (!err && info) {
+            global.GoatBot.onReply.set(info.messageID, {
+              commandName: exports.config.name,
               author: senderID,
               type: "simsimi"
             });
@@ -414,7 +388,7 @@ module.exports.handleEvent = async function ({
     ) {
       const query = raw
         .replace(
-          /^baby\s+|^bot\s+|^bby\s+|^jan\s+|^xan\s+|^জান\s+|^maruf\s+|^মারুফ\s+/i,
+          /^baby\s+|^bot\s+|^bby\s+|^jan\s+|^xan\s+|^জান\s+|^বট\s+|^বেবি\s+/i,
           ""
         )
         .trim();
@@ -435,10 +409,9 @@ module.exports.handleEvent = async function ({
             rep,
             event.threadID,
             (err, info) => {
-              if (!err) {
-                global.client.handleReply.push({
-                  name: module.exports.config.name,
-                  messageID: info.messageID,
+              if (!err && info) {
+                global.GoatBot.onReply.set(info.messageID, {
+                  commandName: exports.config.name,
                   author: senderID,
                   type: "simsimi"
                 });
