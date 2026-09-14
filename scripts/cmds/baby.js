@@ -6,7 +6,7 @@ const getMainAPI = async () => {
   return (await axios.get(apiList)).data.simsimi;
 };
 
-exports.config = {
+module.exports.config = {
   name: "baby",
   version: "1.0.3",
   author: "𝐌𝐚𝐑𝐮𝐅",
@@ -20,10 +20,19 @@ exports.config = {
   }
 };
 
-exports.onStart = async function ({ api, event, args, users }) {
+const setReply = (messageID, event) => {
+  global.GoatBot.onReply.set(messageID, {
+    commandName: module.exports.config.name,
+    type: "reply",
+    messageID,
+    author: event.senderID
+  });
+};
+
+module.exports.onStart = async function ({ api, event, args, usersData }) {
   try {
     const uid = event.senderID;
-    const senderName = await users.getName(uid);
+    const senderName = await usersData.getName(uid);
     const rawQuery = args.join(" ");
     const query = rawQuery.toLowerCase();
     const simsim = await getMainAPI();
@@ -33,12 +42,8 @@ exports.onStart = async function ({ api, event, args, users }) {
       const r = ran[Math.floor(Math.random() * ran.length)];
 
       return api.sendMessage(r, event.threadID, (err, info) => {
-        if (!err && info) {
-          global.GoatBot.onReply.set(info.messageID, {
-            commandName: exports.config.name,
-            author: event.senderID,
-            type: "simsimi"
-          });
+        if (!err) {
+          setReply(info.messageID, event);
         }
       });
     }
@@ -80,13 +85,13 @@ exports.onStart = async function ({ api, event, args, users }) {
           event.threadID,
           event.messageID
         );
+      } else {
+        return api.sendMessage(
+          `Error: ${res.data.message}`,
+          event.threadID,
+          event.messageID
+        );
       }
-
-      return api.sendMessage(
-        `Error: ${res.data.message}`,
-        event.threadID,
-        event.messageID
-      );
     }
 
     if (command === "edit") {
@@ -177,12 +182,8 @@ exports.onStart = async function ({ api, event, args, users }) {
           rep,
           event.threadID,
           (err, info) => {
-            if (!err && info) {
-              global.GoatBot.onReply.set(info.messageID, {
-                commandName: exports.config.name,
-                author: event.senderID,
-                type: "simsimi"
-              });
+            if (!err) {
+              setReply(info.messageID, event);
             }
 
             resolve();
@@ -200,9 +201,15 @@ exports.onStart = async function ({ api, event, args, users }) {
   }
 };
 
-exports.onReply = async function ({ api, event, Reply, users }) {
+module.exports.onReply = async function ({
+  api,
+  event,
+  usersData
+}) {
   try {
-    const senderName = await users.getName(event.senderID);
+    if (event.type !== "message_reply") return;
+
+    const senderName = await usersData.getName(event.senderID);
     const replyText = event.body ? event.body.toLowerCase() : "";
 
     if (!replyText) return;
@@ -223,12 +230,8 @@ exports.onReply = async function ({ api, event, Reply, users }) {
           rep,
           event.threadID,
           (err, info) => {
-            if (!err && info) {
-              global.GoatBot.onReply.set(info.messageID, {
-                commandName: exports.config.name,
-                author: event.senderID,
-                type: "simsimi"
-              });
+            if (!err) {
+              setReply(info.messageID, event);
             }
 
             resolve();
@@ -246,7 +249,11 @@ exports.onReply = async function ({ api, event, Reply, users }) {
   }
 };
 
-exports.onChat = async function ({ api, event, users }) {
+module.exports.onChat = async function ({
+  api,
+  event,
+  usersData
+}) {
   try {
     const raw = event.body
       ? event.body.toLowerCase().trim()
@@ -254,7 +261,7 @@ exports.onChat = async function ({ api, event, users }) {
 
     if (!raw) return;
 
-    const senderName = await users.getName(event.senderID);
+    const senderName = await usersData.getName(event.senderID);
     const senderID = event.senderID;
 
     const simsim = await getMainAPI();
@@ -293,10 +300,6 @@ exports.onChat = async function ({ api, event, users }) {
       "আরে বোকা বট না জানু বল জানু😌",
       "বলো জানু 🌚",
       "তোর কি চোখে পড়ে না আমি ব্যাস্ত আছি😒",
-      "হুম জান তোমার ওই খানে উম্মহ😑😘",
-      "আহ শুনা আমার তোমার অলিতে গলিতে উম্মাহ😇😘",
-      "jang hanga korba😒😬",
-      "হুম জান তোমার অইখানে উম্মমাহ😷😘",
       "আসসালামু আলাইকুম বলেন আপনার জন্য কি করতে পারি..!🥰",
       "আমাকে এতো না ডেকে মারুফ কে একটা GF দে'হহহ 🙄",
       "আমাকে এতো না ডেকছ কেন ভলো টালো বাসো নাকি🤭🙈",
@@ -309,12 +312,12 @@ exports.onChat = async function ({ api, event, users }) {
       "চুনা ও চুনা আমার বস মারুফ এর হবু বউ রে কেও দেকছো খুজে পাচ্ছি না😪🤧😭",
       "স্বপ্ন তোমারে নিয়ে দেখতে চাই তুমি যদি আমার হয়ে থেকে যাও-💝🌺🌻",
       "জান হাঙ্গা করবা-🙊😝🌻",
-      "জান মেয়ে হলে চিপায় আসো বস মারুফের থেকে অনেক ভালোবাসা শিখছি তোমার জন্য-🙊🙈😽",
       "ইসস এতো ডাকো কেনো লজ্জা লাগে তো-🙈🖤🌼",
       "আমার বস মারুফের পক্ষ থেকে তোমারে এতো এতো ভালোবাসা-🥰😽🫶 আমার বস মারুফ এর জন্য দোয়া করবেন-💝💚🌺🌻",
       "আমার জান তুমি শুধু আমার আমি তোমারে ৩৬৫ দিন ভালোবাসি-💝🌺😽",
       "কিরে প্রেম করবি তাহলে মারুফের ইনবক্সে গুতা দে 😘🤌 𝐅𝐚𝐜𝐞𝐛𝐨𝐨𝐤 𝐋𝐢𝐧𝐤 : https://www.facebook.com/profile.php?id=61594013413183",
       "জান আমার বস মারুফ কে বিয়ে করবা-🙊😘🥳",
+      "-আন্টি-🙆-আপনার মেয়ে-👰‍♀️-রাতে আমারে ভিদু কল দিতে বলে🫣-🥵🤤💦",
       "oii-🥺🥹-এক🥄 চামচ ভালোবাসা দিবা-🤏🏻🙂",
       "-আপনার সুন্দরী বান্ধুবীকে ফিতরা হিসেবে আমার বস মারুফ কে দান করেন-🥱🐰🍒",
       "-ও মিম ও মিম-😇-তুমি কেন চুরি করলা সাদিয়ার ফর্সা হওয়ার ক্রীম-🌚🤧",
@@ -354,8 +357,8 @@ exports.onChat = async function ({ api, event, users }) {
       raw === "jan" ||
       raw === "xan" ||
       raw === "জান" ||
-      raw === "বট" ||
-      raw === "বেবি"
+      raw === "maruf" ||
+      raw === "মারুফ"
     ) {
       const randomReply =
         greetings[Math.floor(Math.random() * greetings.length)];
@@ -364,12 +367,8 @@ exports.onChat = async function ({ api, event, users }) {
         randomReply,
         event.threadID,
         (err, info) => {
-          if (!err && info) {
-            global.GoatBot.onReply.set(info.messageID, {
-              commandName: exports.config.name,
-              author: senderID,
-              type: "simsimi"
-            });
+          if (!err) {
+            setReply(info.messageID, event);
           }
         },
         event.messageID
@@ -388,7 +387,7 @@ exports.onChat = async function ({ api, event, users }) {
     ) {
       const query = raw
         .replace(
-          /^baby\s+|^bot\s+|^bby\s+|^jan\s+|^xan\s+|^জান\s+|^বট\s+|^বেবি\s+/i,
+          /^baby\s+|^bot\s+|^bby\s+|^jan\s+|^xan\s+|^জান\s+|^maruf\s+|^মারুফ\s+/i,
           ""
         )
         .trim();
@@ -409,12 +408,8 @@ exports.onChat = async function ({ api, event, users }) {
             rep,
             event.threadID,
             (err, info) => {
-              if (!err && info) {
-                global.GoatBot.onReply.set(info.messageID, {
-                  commandName: exports.config.name,
-                  author: senderID,
-                  type: "simsimi"
-                });
+              if (!err) {
+                setReply(info.messageID, event);
               }
 
               resolve();
